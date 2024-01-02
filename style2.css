@@ -1,0 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk&display=swap");
+
+:root {
+    --header-font: "Space Grotesk", sans-serif;
+    --text-font: "Noto Sans", sans-serif;
+    --code-font: "Fira Code", monospace;
+}
+
+:root.light {
+    --h1-border-color: #d8dee4;
+    --primary-color: #c73412;
+}
+
+:root.dark {
+    --h1-border-color: #21262d;
+    --primary-color: #c73412;
+}
+
+html {
+    transition: background 0.256s linear;
+}
+
+h1::before,
+h2::before,
+h3::before,
+h4::before,
+h5::before,
+h6::before {
+    content: ""
+}
+
+h1:not(.title) {
+    font-size: 1.2rem;
+    border-bottom: 1px solid var(--h1-border-color);
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: 1.0rem;
+}
+
+.card>img {
+    border-radius: 5px;
+}
+
+.social:hover {
+    border-radius: 4px;
+}
+
+#dark-mode-toggle {
+    border-radius: 4px;
+}
+
+.footnote-definition {
+    display: flex;
+}
+
+.footnote-definition>p {
+    padding: 0px 10px;
+    margin: 0;
+}
+
+.footnote-definition>sup::after {
+    content: ".";
+}
+
+img {
+    border: 0;
+    border-radius: 4px;
+}
+
+pre {
+    max-height: 800px;
+    border-radius: 0.256em;
+    font-size: 1em;
+}
