@@ -1,0 +1,1266 @@
+<!doctype html><html class=dark><head><meta charset=UTF-8><meta content="IE=edge" http-equiv=X-UA-Compatible><meta content="width=device-width,initial-scale=1.0" name=viewport><title>
+         Tundra - behind the scenes
+        
+    </title><meta content="Tundra - behind the scenes" property=og:title><script src="https://www.googletagmanager.com/gtag/js?id=G-L4GT238S3Q" async></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-L4GT238S3Q')</script><script async data-goatcounter=https://y54326htgw432h3q245.goatcounter.com/count src=https://2aecfff4.github.io/js/count.js></script><noscript><img src="https://y54326htgw432h3q245.goatcounter.com//count?p=/posts/tundra-behing-the-scenes/&t=Tundra - behind the scenes"></noscript><script>MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']]}}</script><script async id=MathJax-script src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script><link href="https://2aecfff4.github.io/ atom.xml" rel=alternate type=application/atom+xml><link href=https://2aecfff4.github.io/theme/dark.css rel=stylesheet><link href=https://2aecfff4.github.io/theme/dark.css id=darkModeStyle rel=stylesheet><link href=https://2aecfff4.github.io/main.css media=screen rel=stylesheet><body><div class=content><header><div class=main><a href=https://2aecfff4.github.io/></a><div class=socials><a class=social href=https://github.com/2aecfff4 rel=me> <img alt=github src=/social_icons/github.svg> </a></div></div><nav><a href=/posts style=margin-left:.7em>posts</a><a href=/projects style=margin-left:.7em>projects</a><a href=/about style=margin-left:.7em>about</a></nav><nav>| <a href id=dark-mode-toggle onclick=toggleTheme()> <img height=15 id=sun-icon src=/feather/sun.svg style=border:unset;filter:invert(1);display:none> <img height=15 id=moon-icon src=/feather/moon.svg style=border:unset;display:none> </a><script src=https://2aecfff4.github.io/js/themetoggle.js></script></nav></header><main><article><div class=title><div class=page-header>Tundra - behind the scenes<span class=primary-color style=font-size:1.6em>.</span></div><div class=meta>Posted on <time>2023-10-29</time></div></div><h1>Table of Contents</h1><ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#about>About</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#resource-management>Resource management</a> <ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#handles>Handles</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#handlemanager-implementation>HandleManager implementation</a></li><ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#handlemanager-add>HandleManager::add</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#handlemanager-with>HandleManager::with</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#handlemanager-destroy>HandleManager::destroy</a></ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#lifetimes>Lifetimes</a></ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#descriptors>Descriptors</a> <ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#descriptor-management>Descriptor management</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#the-future>The future</a></ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#command-buffers>Command buffers</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#mesh-processing>Mesh processing</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#rendering>Rendering</a> <ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#data-structures>Data structures</a></li><ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#mesh-descriptor>Mesh Descriptor</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#meshlets>Meshlets</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#scene>Scene</a></ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#helper-functions>Helper functions</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#uniform-buffers>Uniform buffers</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#instance-culling>Instance culling</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#meshlet-culling>Meshlet culling</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#software-rasterization>Software rasterization</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#compute-based-vertex-culling>Compute-based vertex culling</a></li><ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#index-buffer-generation>Index buffer generation</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#generating-draw-indirect-commands>Generating draw indirect commands</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#rasterization>Rasterization</a></ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#mesh-shaders>Mesh shaders</a></ul><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#summary>Summary</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#screenshots>Screenshots</a><li><a href=https://2aecfff4.github.io/posts/tundra-behing-the-scenes/#resources>Resources</a></ul><section class=body><h1 id=about>About</h1><p>Tundra is an experimental project that aims to explore C++ 20 and modern GPU-driven rendering techniques.<p><img alt src=/img/tundra_behind_the_scenes/car-pbr-gold-2.png><h1 id=resource-management>Resource management</h1><h2 id=handles>Handles</h2><p>Handles are used instead of pointers to manage resources. They offer the advantage of ensuring safety by preventing dangling pointers and providing full centralized control over resources. This allows us to destroy all resources at any time and manage the memory however we want. This is crucial in Vulkan, because for instance, <a href=https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkDestroyDevice.html#VUID-vkDestroyDevice-device-00378>all resources must be destroyed before destroying <code>VkDevice</code></a>.<p>For example, when using <code>std::shared_ptr</code> (to avoid possibility of dangling pointers), the order and time at which resources will be destroyed are unknown from the RHI perspective.<p>This issue can be prevented either by using <code>std::weak_ptr</code> or introducing an additional layer of indirection, and then storing all resources in one central location. However, implementing this approach would result in a suboptimal solution compared to simply using the handle manager approach. On a 64-bit platform, <code>std::weak_ptr</code> occupies 16 bytes in addition to the overhead of atomic operations, as compared to a handle made of a single unsigned integer.<p>Each handle contains a 64-bit integer that holds information about:<ul><li>The type of a handle. Buffer, shader etc.<li>The index referring to the underlying object associated with the handle.<li>The handle generation.</ul><p>Representation of a handle in bits per component:<pre style=background:#2b303b;color:#c0c5ce><code><span>|  type  |                 index                  |   generation   |
+</span><span>|--------|----------------------------------------|----------------|
+</span><span>|    8   |                  40                    |       16       |
+</span></code></pre><p>Using 40 bits for a handle index is most likely excessive and it can be reduced to 18 bits (262'144). Additionally, handle type may be reduced to 4 bits since we likely won't need more than 16 handle types. Making these adjustments will allow us to fit all necessary information into a 32-bit integer.<pre style=background:#2b303b;color:#c0c5ce><code><span>|  type  |                 index                  |   generation   |
+</span><span>|--------|----------------------------------------|----------------|
+</span><span>|    4   |                  18                    |       10       |
+</span></code></pre><p>The <code>Handle</code> type is implemented using a templated class. As a result, each handle is a distinct type, providing us with type safety at no additional cost. Bit manipulation is used to access values.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>template </span><span>&LTHandleType handle_type>
+</span><span style=color:#b48ead>class </span><span style=color:#ebcb8b>Handle </span><span style=color:#eff1f5>{
+</span><span style=color:#b48ead>public</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>static constexpr</span><span style=color:#eff1f5> u64 INDEX_MASK </span><span>= </span><span style=color:#d08770>0x00FF'FFFF'FFFF'0000</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>static constexpr</span><span style=color:#eff1f5> u64 INDEX_SHIFT </span><span>= </span><span style=color:#d08770>16</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>static constexpr</span><span style=color:#eff1f5> u64 GENERATION_MASK </span><span>= </span><span style=color:#d08770>0x0000'0000'0000'FFFF</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>static constexpr</span><span style=color:#eff1f5> u64 GENERATION_SHIFT </span><span>= </span><span style=color:#d08770>0</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>static constexpr</span><span style=color:#eff1f5> u64 MAX_GENERATION </span><span>= </span><span style=color:#eff1f5>Handle::GENERATION_MASK;
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>static constexpr</span><span style=color:#eff1f5> u64 HANDLE_TYPE_MASK </span><span>= </span><span style=color:#d08770>0xFF00'0000'0000'0000</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>static constexpr</span><span style=color:#eff1f5> u64 HANDLE_TYPE_SHIFT </span><span>= </span><span style=color:#d08770>56</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>static constexpr</span><span style=color:#eff1f5> u64 NULL_HANDLE 
+</span><span style=color:#eff1f5>        </span><span>= </span><span style=color:#eff1f5>Handle::INDEX_MASK </span><span>| </span><span style=color:#eff1f5>Handle::GENERATION_MASK;
+</span><span style=color:#eff1f5>
+</span><span style=color:#b48ead>private</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    u64 m_id </span><span>=</span><span style=color:#eff1f5> NULL_HANDLE;
+</span><span style=color:#eff1f5>
+</span><span style=color:#b48ead>public</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>constexpr </span><span style=color:#8fa1b3>Handle</span><span style=color:#eff1f5>() </span><span style=color:#b48ead>noexcept </span><span>= </span><span style=color:#b48ead>default</span><span style=color:#eff1f5>;    
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>constexpr </span><span style=color:#8fa1b3>Handle</span><span style=color:#eff1f5>(</span><span style=color:#b48ead>const</span><span style=color:#eff1f5> u64 </span><span style=color:#bf616a>index</span><span style=color:#eff1f5>, </span><span style=color:#b48ead>const</span><span style=color:#eff1f5> u64 </span><span style=color:#bf616a>generation</span><span style=color:#eff1f5>) </span><span style=color:#b48ead>noexcept </span><span style=color:#eff1f5>{
+</span><span style=color:#eff1f5>        </span><span style=color:#bf616a>m_id </span><span>= </span><span style=color:#eff1f5>(</span><span>static_cast</span><span style=color:#eff1f5>&LTu64>(handle_type) </span><span><<</span><span style=color:#eff1f5> HANDLE_TYPE_SHIFT) 
+</span><span style=color:#eff1f5>            </span><span>| </span><span style=color:#eff1f5>(index </span><span><<</span><span style=color:#eff1f5> INDEX_SHIFT) 
+</span><span style=color:#eff1f5>            </span><span>| </span><span style=color:#eff1f5>(generation </span><span><<</span><span style=color:#eff1f5> GENERATION_SHIFT);
+</span><span style=color:#eff1f5>    }
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>constexpr explicit </span><span style=color:#8fa1b3>Handle</span><span style=color:#eff1f5>(</span><span style=color:#b48ead>const</span><span style=color:#eff1f5> u64 </span><span style=color:#bf616a>id</span><span style=color:#eff1f5>) </span><span style=color:#b48ead>noexcept
+</span><span style=color:#eff1f5>        : </span><span style=color:#bf616a>m_id</span><span style=color:#eff1f5>(id) {
+</span><span style=color:#eff1f5>    }
+</span><span style=color:#eff1f5>
+</span><span style=color:#b48ead>public</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    [[nodiscard]] 
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>constexpr bool </span><span style=color:#8fa1b3>is_null</span><span style=color:#eff1f5>() </span><span style=color:#b48ead>const noexcept </span><span style=color:#eff1f5>{
+</span><span style=color:#eff1f5>        </span><span style=color:#b48ead>return </span><span style=color:#eff1f5>(</span><span style=color:#bf616a>m_id </span><span>& </span><span style=color:#eff1f5>(</span><span>~</span><span style=color:#eff1f5>HANDLE_TYPE_MASK)) </span><span>==</span><span style=color:#eff1f5> NULL_HANDLE;
+</span><span style=color:#eff1f5>    }
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>    [[nodiscard]] 
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>constexpr</span><span style=color:#eff1f5> u64 </span><span style=color:#8fa1b3>id</span><span style=color:#eff1f5>() </span><span style=color:#b48ead>const noexcept </span><span style=color:#eff1f5>{
+</span><span style=color:#eff1f5>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>m_id</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    }
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>    [[nodiscard]] 
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>constexpr</span><span style=color:#eff1f5> u64 </span><span style=color:#8fa1b3>generation</span><span style=color:#eff1f5>() </span><span style=color:#b48ead>const noexcept </span><span style=color:#eff1f5>{
+</span><span style=color:#eff1f5>        </span><span style=color:#b48ead>return </span><span style=color:#eff1f5>(</span><span style=color:#bf616a>m_id </span><span>&</span><span style=color:#eff1f5> GENERATION_MASK) </span><span>>></span><span style=color:#eff1f5> GENERATION_SHIFT;
+</span><span style=color:#eff1f5>    }
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>    [[nodiscard]] 
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>constexpr</span><span style=color:#eff1f5> u64 </span><span style=color:#8fa1b3>index</span><span style=color:#eff1f5>() </span><span style=color:#b48ead>const noexcept </span><span style=color:#eff1f5>{
+</span><span style=color:#eff1f5>        </span><span style=color:#b48ead>return </span><span style=color:#eff1f5>(</span><span style=color:#bf616a>m_id </span><span>&</span><span style=color:#eff1f5> INDEX_MASK) </span><span>>></span><span style=color:#eff1f5> INDEX_SHIFT;
+</span><span style=color:#eff1f5>    }
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>    [[nodiscard]] 
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>constexpr</span><span style=color:#eff1f5> u64 </span><span style=color:#8fa1b3>handle_type</span><span style=color:#eff1f5>() </span><span style=color:#b48ead>const noexcept </span><span style=color:#eff1f5>{
+</span><span style=color:#eff1f5>        </span><span style=color:#b48ead>return </span><span style=color:#eff1f5>(</span><span style=color:#bf616a>m_id </span><span>&</span><span style=color:#eff1f5> HANDLE_TYPE_MASK) </span><span>>></span><span style=color:#eff1f5> HANDLE_TYPE_SHIFT;
+</span><span style=color:#eff1f5>    }
+</span><span style=color:#eff1f5>
+</span><span style=color:#b48ead>public</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    [[nodiscard]] 
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>constexpr bool </span><span style=color:#8fa1b3>operator==</span><span style=color:#eff1f5>(</span><span style=color:#b48ead>const </span><span style=color:#eff1f5>Handle</span><span>&</span><span style=color:#eff1f5>) </span><span style=color:#b48ead>const noexcept </span><span>= </span><span style=color:#b48ead>default</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    [[nodiscard]] 
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>constexpr bool </span><span style=color:#8fa1b3>operator!=</span><span style=color:#eff1f5>(</span><span style=color:#b48ead>const </span><span style=color:#eff1f5>Handle</span><span>&</span><span style=color:#eff1f5>) </span><span style=color:#b48ead>const noexcept </span><span>= </span><span style=color:#b48ead>default</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>}</span><span>;
+</span></code></pre><p>An example of how the <code>Handle</code> type can be used:<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>enum class </span><span>HandleType : </span><span style=color:#a3be8c>u64 </span><span>{
+</span><span>    Buffer,
+</span><span>    Shader,
+</span><span>    ComputePipeline,
+</span><span>    GraphicsPipeline,
+</span><span>    Swapchain,
+</span><span>    Texture,
+</span><span>    TextureView,
+</span><span>    Sampler,
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>using </span><span>BufferHandle = Handle&LTHandleType::Buffer>;
+</span></code></pre><h2 id=handlemanager-implementation><code>HandleManager</code> implementation</h2><p>The main role of the <code>HandleManager</code> is to provide a safe mapping between handles and resources. It allows to access underlying resources through safe handles instead of pointers. Centralized resource management allows us to efficiently destroy resources in the optimal order.<p>The <code>HandleManager</code> consists of:<ol><li><code>ResourceStorage</code>: This structure holds information about the resource. It contains: <ul><li>A <code>core::UniquePtr</code> wrapping an instance of the <code>BackendType</code>, which represents the actual resource.<li>An unsigned 32-bit integer representing generation, primarily used for detecting use-after-free events.</ul><li><code>Inner</code>: Helper structure used to encapsulate variables into a single structure. <ul><li>An array of <code>ResourceStorage</code> objects. This array holds the actual resource instances (backend objects) and their corresponding generation numbers.<li>A double-ended queue (<code>core::Deque</code>) that holds the handles released and ready for reuse.</ul><li><code>MIN_NUM_FREE_HANDLES</code>: This constant represents the minimum number of free handles required before <code>HandleManager</code> begins reusing them. Its purpose is to prevent the same slot from being reused repeatedly, which would quickly exhaust all available generations.</ol><p>The <code>RwLock</code> is very similar to the <a href=https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p0290r4.html><code>std::synchronised_value</code> proposal</a>, and operates similarly to Rust's <a href=https://doc.rust-lang.org/std/sync/struct.RwLock.html><code>RwLock</code></a>. The mutex is coupled to the value. This approach ensures that the mutex is acquired before accessing the stored value.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>template </span><span><</span><span style=color:#b48ead>typename</span><span> FrontendType, </span><span style=color:#b48ead>typename</span><span> BackendType>
+</span><span style=color:#b48ead>class </span><span style=color:#ebcb8b>HandleManager </span><span style=color:#eff1f5>{
+</span><span style=color:#b48ead>private</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>struct </span><span style=color:#eff1f5>ResourceStorage {
+</span><span style=color:#eff1f5>        core::UniquePtr&LTBackendType> object;
+</span><span style=color:#eff1f5>        u32 generation </span><span>= </span><span style=color:#d08770>0</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    };
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>struct </span><span style=color:#eff1f5>Inner {
+</span><span style=color:#eff1f5>        core::Array&LTResourceStorage> resources;
+</span><span style=color:#eff1f5>        core::Deque&LTFrontendType> free_list;
+</span><span style=color:#eff1f5>    };
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>static constexpr</span><span style=color:#eff1f5> usize MIN_NUM_FREE_HANDLES </span><span>= </span><span style=color:#d08770>1024</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>
+</span><span style=color:#b48ead>private</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>mutable</span><span style=color:#eff1f5> core::RwLock&LTInner> </span><span style=color:#bf616a>m_inner</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>}</span><span>;
+</span></code></pre><blockquote><p>In C++ 20, it is possible to easily constrain <code>FrontendType</code> using concepts. This can be achieved using immediately invoked templated lambda functions, for example:<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>template </span><span><</span><span style=color:#b48ead>typename</span><span> T>
+</span><span>concept handle = </span><span style=color:#bf616a>requires</span><span>(T v) {
+</span><span>    []&LTHandleType handle_type>(</span><span style=color:#b48ead>const</span><span> Handle&LThandle_type>) {} (v);
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>template </span><span>&LThandle FrontendType, </span><span style=color:#b48ead>typename</span><span> BackendType>
+</span><span style=color:#b48ead>class </span><span style=color:#ebcb8b>HandleManager</span><span>;
+</span></code></pre></blockquote><h3 id=handlemanager-add><code>HandleManager::add</code></h3><p>The <code>add</code> function is straightforward. Firstly, it checks if there is a minimum amount of free handles. The purpose of this check is to distribute usage evenly and prevent repeatedly using the same slot, which could lead to the exhaustion of all possible generations and render the slot useless.<br> If there is an available handle, it is removed from the front of <code>Deque</code> and its generation number is increased by one. If an available handle is not present, then the new handle is generated by using the <code>resources</code> array size and setting the generation to zero.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>template </span><span><</span><span style=color:#b48ead>typename</span><span>... Args>
+</span><span>[[nodiscard]]
+</span><span>FrontendType </span><span style=color:#8fa1b3>add</span><span>(Args&&... </span><span style=color:#bf616a>args</span><span>) </span><span style=color:#b48ead>noexcept </span><span>{
+</span><span>    </span><span style=color:#b48ead>auto</span><span> object = core::</span><span style=color:#bf616a>make_unique</span><span>&LTBackendType>(core::</span><span style=color:#bf616a>forward</span><span>&LTArgs>(args)...);
+</span><span>
+</span><span>    </span><span style=color:#b48ead>auto</span><span> inner = </span><span style=color:#bf616a>m_inner</span><span>.</span><span style=color:#bf616a>write</span><span>();
+</span><span>    </span><span style=color:#b48ead>if </span><span>(inner-></span><span style=color:#bf616a>free_list</span><span>.</span><span style=color:#bf616a>size</span><span>() < HandleManager::MIN_NUM_FREE_HANDLES) {
+</span><span>        </span><span style=color:#b48ead>const</span><span> usize index = inner-></span><span style=color:#bf616a>resources</span><span>.</span><span style=color:#bf616a>size</span><span>();
+</span><span>
+</span><span>        inner-></span><span style=color:#bf616a>resources</span><span>.</span><span style=color:#bf616a>push_back</span><span>(HandleManager::</span><span style=color:#bf616a>ResourceStorage </span><span>{
+</span><span>            .</span><span style=color:#bf616a>object </span><span>= core::</span><span style=color:#bf616a>move</span><span>(object),
+</span><span>        });
+</span><span>
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#bf616a>FrontendType</span><span>(static_cast&LTu64>(index), </span><span style=color:#d08770>0</span><span>);
+</span><span>    } </span><span style=color:#b48ead>else </span><span>{
+</span><span>        </span><span style=color:#b48ead>const</span><span> FrontendType old_handle = inner-></span><span style=color:#bf616a>free_list</span><span>.</span><span style=color:#bf616a>front</span><span>();
+</span><span>        inner-></span><span style=color:#bf616a>free_list</span><span>.</span><span style=color:#bf616a>pop_front</span><span>();
+</span><span>
+</span><span>        </span><span style=color:#b48ead>const</span><span> FrontendType </span><span style=color:#bf616a>new_handle</span><span>(
+</span><span>            old_handle.</span><span style=color:#bf616a>index</span><span>(), 
+</span><span>            old_handle.</span><span style=color:#bf616a>generation</span><span>() + </span><span style=color:#d08770>1
+</span><span>        );
+</span><span>
+</span><span>        inner-></span><span style=color:#bf616a>resources</span><span>[new_handle.</span><span style=color:#bf616a>index</span><span>()].</span><span style=color:#bf616a>object </span><span>= core::</span><span style=color:#bf616a>move</span><span>(object);
+</span><span>
+</span><span>        </span><span style=color:#b48ead>return</span><span> new_handle;
+</span><span>    }
+</span><span>}
+</span></code></pre><h3 id=handlemanager-with><code>HandleManager::with</code></h3><p>To access an underlying object, the handle needs to be passed to <code>HandleManager::with</code> together with a callback. The <code>HandleManager</code> validates the handle by verifying that the index is in the range and ensuring that the generation matches that of the underlying object. If the handle is valid, the <code>func</code> is executed.<p>This function intentionally avoids returning a reference or a pointer to the underlying object, to prevent synchronization issues, such as caching the returned value and accessing it later. Unfortunately, in C++, it cannot be fully enforced. A programmer can still bypass it intentionally, but this should hopefully be caught during code review.<p>Additionally, this function could be further restricted by disallowing the return of any pointer-like objects; however, this may lead to issues. For instance, <a href=https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_DEFINE_NON_DISPATCHABLE_HANDLE.html>Vulkan handles on 64-bit platforms are defined as pointers</a>.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>template </span><span><
+</span><span>    std::invocable<</span><span style=color:#b48ead>const</span><span> BackendType&> Func,
+</span><span>    </span><span style=color:#b48ead>typename</span><span> Data = std::invoke_result_t&LTFunc, </span><span style=color:#b48ead>const</span><span> BackendType&>>
+</span><span>[[nodiscard]]
+</span><span>core::Expected&LTData, HandleManagerError> </span><span style=color:#8fa1b3>with</span><span>(
+</span><span>    </span><span style=color:#b48ead>const</span><span> FrontendType </span><span style=color:#bf616a>handle</span><span>, 
+</span><span>    Func func
+</span><span>) </span><span style=color:#b48ead>const noexcept </span><span>{
+</span><span>    </span><span style=color:#b48ead>if </span><span>(handle.</span><span style=color:#bf616a>is_null</span><span>()) {
+</span><span>        </span><span style=color:#b48ead>return </span><span>core::</span><span style=color:#bf616a>make_unexpected</span><span>(HandleManagerError::NullHandle);
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#b48ead>auto</span><span> inner = </span><span style=color:#bf616a>m_inner</span><span>.</span><span style=color:#bf616a>read</span><span>();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const</span><span> u64 index = handle.</span><span style=color:#bf616a>index</span><span>();
+</span><span>    </span><span style=color:#b48ead>if </span><span>(index >= inner-></span><span style=color:#bf616a>resources</span><span>.</span><span style=color:#bf616a>size</span><span>()) {
+</span><span>        </span><span style=color:#b48ead>return </span><span>core::</span><span style=color:#bf616a>make_unexpected</span><span>(HandleManagerError::InvalidHandle);
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const</span><span> HandleManager::ResourceStorage& resource_storage
+</span><span>         = inner-></span><span style=color:#bf616a>resources</span><span>[index];
+</span><span>    </span><span style=color:#b48ead>const bool</span><span> is_valid 
+</span><span>        = (resource_storage.</span><span style=color:#bf616a>generation </span><span>== handle.</span><span style=color:#bf616a>generation</span><span>()) &&
+</span><span>            resource_storage.</span><span style=color:#bf616a>object</span><span>.</span><span style=color:#bf616a>is_valid</span><span>();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>if </span><span>(is_valid) {
+</span><span>        </span><span style=color:#b48ead>auto</span><span>& obj = core::</span><span style=color:#bf616a>as_const</span><span>(*resource_storage.</span><span style=color:#bf616a>object</span><span>);
+</span><span>        </span><span style=color:#b48ead>if constexpr </span><span>(std::is_same_v&LTData, </span><span style=color:#b48ead>void</span><span>>) {
+</span><span>            </span><span style=color:#bf616a>func</span><span>(obj);
+</span><span>            </span><span style=color:#b48ead>return </span><span>{};
+</span><span>        } </span><span style=color:#b48ead>else </span><span>{
+</span><span>            </span><span style=color:#b48ead>return </span><span style=color:#bf616a>func</span><span>(obj);
+</span><span>        }
+</span><span>    } </span><span style=color:#b48ead>else </span><span>{
+</span><span>        </span><span style=color:#b48ead>return </span><span>core::</span><span style=color:#bf616a>make_unexpected</span><span>(HandleManagerError::InvalidHandle);
+</span><span>    }
+</span><span>}
+</span></code></pre><p>And this is how it can be used:<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>const</span><span> u64 buffer_size = handle_manager 
+</span><span>    .</span><span style=color:#bf616a>with</span><span>(
+</span><span>        handle,                          
+</span><span>        [](</span><span style=color:#b48ead>const</span><span> VulkanBuffer& buffer) { 
+</span><span>            </span><span style=color:#b48ead>return</span><span> buffer.</span><span style=color:#bf616a>size</span><span>();
+</span><span>        }
+</span><span>    );
+</span></code></pre><h3 id=handlemanager-destroy><code>HandleManager::destroy</code></h3><p>The <code>HandleManager::destroy</code> ensures that an object is still alive when it is being called for destruction. This is verified by checking that the index is within the valid range, the handle generation matches the generation stored in <code>ResourceStorage</code>, and the object itself is not a <code>nullptr</code>. Assuming the handle is valid, the underlying object will be destroyed and the generation will be incremented. If the incremented handle generation is less than the maximum generation, it will be added to the <code>free_list</code>.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span>[[nodiscard]]
+</span><span style=color:#b48ead>bool </span><span style=color:#8fa1b3>destroy</span><span>(</span><span style=color:#b48ead>const</span><span> FrontendType </span><span style=color:#bf616a>handle</span><span>) </span><span style=color:#b48ead>noexcept </span><span>{
+</span><span>    </span><span style=color:#b48ead>auto</span><span> inner = </span><span style=color:#bf616a>m_inner</span><span>.</span><span style=color:#bf616a>write</span><span>();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const</span><span> u64 index = handle.</span><span style=color:#bf616a>index</span><span>();
+</span><span>    </span><span style=color:#bf616a>tndr_assert</span><span>(index < inner-></span><span style=color:#bf616a>resources</span><span>.</span><span style=color:#bf616a>size</span><span>(), "");
+</span><span>
+</span><span>    HandleManager::ResourceStorage& resource_storage = inner-></span><span style=color:#bf616a>resources</span><span>[index];
+</span><span>    </span><span style=color:#b48ead>const bool</span><span> is_valid 
+</span><span>        = (resource_storage.</span><span style=color:#bf616a>generation </span><span>== handle.</span><span style=color:#bf616a>generation</span><span>()) &&
+</span><span>          (resource_storage.</span><span style=color:#bf616a>object </span><span>!= </span><span style=color:#d08770>nullptr</span><span>);
+</span><span>
+</span><span>    </span><span style=color:#b48ead>if </span><span>(is_valid) {
+</span><span>        resource_storage.</span><span style=color:#bf616a>object</span><span>.</span><span style=color:#bf616a>reset</span><span>();
+</span><span>        resource_storage.</span><span style=color:#bf616a>generation </span><span>+= </span><span style=color:#d08770>1</span><span>;
+</span><span>
+</span><span>        </span><span style=color:#b48ead>if </span><span>((handle.</span><span style=color:#bf616a>generation</span><span>() + </span><span style=color:#d08770>1</span><span>) < (FrontendType::MAX_GENERATION - </span><span style=color:#d08770>1</span><span>)) {
+</span><span>            inner-></span><span style=color:#bf616a>free_list</span><span>.</span><span style=color:#bf616a>push_back</span><span>(handle);
+</span><span>        }
+</span><span>
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#d08770>true</span><span>;
+</span><span>    } </span><span style=color:#b48ead>else </span><span>{
+</span><span>        </span><span style=color:#b48ead>return </span><span style=color:#d08770>false</span><span>;
+</span><span>    }
+</span><span>}
+</span></code></pre><h2 id=lifetimes>Lifetimes</h2><p>In modern low-level graphics APIs, we are responsible for managing the resource's lifetime rather than the driver. We have to make sure that resources aren't destroyed while the are still being used by the GPU.<p>To solve this issue, I implemented a resource tracker. It relies on a hash map to map the handle ID to the <code>Resource</code> struct that consists of a resource destructor with a reference count. The tracker is primarily used by the command buffer decoder to ensure that resources won't be destroyed while the GPU is still using them.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>class </span><span style=color:#ebcb8b>ResourceTracker </span><span style=color:#eff1f5>{
+</span><span style=color:#b48ead>public</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>struct </span><span style=color:#eff1f5>Resources {
+</span><span style=color:#eff1f5>        core::HashSet&LTu64> resources;
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>        </span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>add_reference</span><span style=color:#eff1f5>(ResourceTracker</span><span>& </span><span style=color:#bf616a>resource_tracker</span><span style=color:#eff1f5>, </span><span style=color:#b48ead>const</span><span style=color:#eff1f5> u64 </span><span style=color:#bf616a>resource</span><span style=color:#eff1f5>) </span><span style=color:#b48ead>noexcept</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    };
+</span><span style=color:#eff1f5>
+</span><span style=color:#b48ead>private</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>struct </span><span style=color:#eff1f5>Resource {
+</span><span style=color:#eff1f5>        core::Function<</span><span style=color:#b48ead>void</span><span style=color:#eff1f5>()> resource_destructor;
+</span><span style=color:#eff1f5>        std::atomic&LTi32> ref_count </span><span>= </span><span style=color:#d08770>1</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>        </span><span style=color:#65737e>// Omitted constructors for simplicity
+</span><span style=color:#eff1f5>    };
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>struct </span><span style=color:#eff1f5>Inner {
+</span><span style=color:#eff1f5>        core::HashMap&LTu64, Resource> resources;
+</span><span style=color:#eff1f5>    };
+</span><span style=color:#eff1f5>
+</span><span style=color:#b48ead>private</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    core::RwLock&LTInner> </span><span style=color:#bf616a>m_inner</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>
+</span><span style=color:#b48ead>public</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>add_resource</span><span style=color:#eff1f5>(</span><span style=color:#b48ead>const</span><span style=color:#eff1f5> u64 </span><span style=color:#bf616a>resource</span><span style=color:#eff1f5>, core::Function<</span><span style=color:#b48ead>void</span><span style=color:#eff1f5>()></span><span>&& </span><span style=color:#bf616a>destructor</span><span style=color:#eff1f5>) </span><span style=color:#b48ead>noexcept</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>add_reference</span><span style=color:#eff1f5>(</span><span style=color:#b48ead>const</span><span style=color:#eff1f5> u64 </span><span style=color:#bf616a>resource</span><span style=color:#eff1f5>) </span><span style=color:#b48ead>noexcept</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>remove_reference</span><span style=color:#eff1f5>(</span><span style=color:#b48ead>const</span><span style=color:#eff1f5> u64 </span><span style=color:#bf616a>resource</span><span style=color:#eff1f5>) </span><span style=color:#b48ead>noexcept</span><span style=color:#eff1f5>;
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>remove_references</span><span style=color:#eff1f5>(Resources</span><span>& </span><span style=color:#bf616a>resources</span><span style=color:#eff1f5>) </span><span style=color:#b48ead>noexcept</span><span style=color:#eff1f5>;    
+</span><span style=color:#eff1f5>}</span><span>;
+</span><span>
+</span></code></pre><p>A resource can be added by using <code>add_resource</code> that requires a handle ID and a destructor function.<p>The reference count can be modified utilizing the <code>add_reference</code> and <code>remove_reference</code> functions. Once the reference count drops to zero, the resource destructor will be invoked.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span>rhi::SwapchainHandle VulkanDevice::</span><span style=color:#8fa1b3>create_swapchain</span><span>(
+</span><span>    </span><span style=color:#b48ead>const</span><span> rhi::SwapchainCreateInfo& create_info
+</span><span>) </span><span style=color:#b48ead>noexcept </span><span>{
+</span><span>    </span><span style=color:#b48ead>const</span><span> rhi::SwapchainHandleType handle 
+</span><span>        = </span><span style=color:#bf616a>m_managers
+</span><span>            .</span><span style=color:#bf616a>swapchain_manager
+</span><span>            -></span><span style=color:#bf616a>add</span><span>(</span><span style=color:#bf616a>m_raw_device</span><span>, create_info);
+</span><span>
+</span><span>    </span><span style=color:#bf616a>m_managers
+</span><span>        .</span><span style=color:#bf616a>resource_tracker
+</span><span>        -></span><span style=color:#bf616a>add_resource</span><span>(
+</span><span>            handle.</span><span style=color:#bf616a>id</span><span>(), 
+</span><span>            [swapchain_manager = </span><span style=color:#bf616a>m_managers</span><span>.</span><span style=color:#bf616a>swapchain_manager</span><span>, handle] () {
+</span><span>                </span><span style=color:#b48ead>const bool</span><span> result = swapchain_manager-></span><span style=color:#bf616a>destroy</span><span>(handle);
+</span><span>                </span><span style=color:#bf616a>tndr_assert</span><span>(result, "</span><span style=color:#a3be8c>`swapchain_manager->destroy` failed!</span><span>");
+</span><span>            }
+</span><span>        );
+</span><span>
+</span><span>    </span><span style=color:#b48ead>return </span><span>rhi::</span><span style=color:#bf616a>SwapchainHandle </span><span>{ handle };
+</span><span>}
+</span><span>
+</span><span style=color:#b48ead>void </span><span>VulkanDevice::</span><span style=color:#8fa1b3>destroy_swapchain</span><span>(</span><span style=color:#b48ead>const</span><span> rhi::SwapchainHandle </span><span style=color:#bf616a>handle</span><span>) </span><span style=color:#b48ead>noexcept </span><span>{
+</span><span>    </span><span style=color:#bf616a>m_managers
+</span><span>        .</span><span style=color:#bf616a>resource_tracker
+</span><span>        -></span><span style=color:#bf616a>remove_reference</span><span>(handle.</span><span style=color:#bf616a>handle</span><span>().</span><span style=color:#bf616a>id</span><span>());
+</span><span>}    
+</span></code></pre><h1 id=descriptors>Descriptors</h1><p>Tundra uses a bindless approach through the usage of the <a href=https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_indexing.html>VK_EXT_descriptor_indexing</a> extension, which simplifies the management of descriptors significantly.<p>One of the assumptions made is that every <code>VkPipeline</code> shares the same <code>VkPipelineLayout</code>, which simplifies the process considerably. As a result, we require only one <code>VkDescriptorPool</code> and <code>VkPipelineLayout</code>.<p>The <code>VkDescriptorPool</code> is created with four sets, each containing 65'535 descriptors in this instance:<ul><li><code>VK_DESCRIPTOR_TYPE_STORAGE_BUFFER</code><li><code>VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE</code><li><code>VK_DESCRIPTOR_TYPE_STORAGE_IMAGE</code><li><code>VK_DESCRIPTOR_TYPE_SAMPLER</code></ul><p>The <code>VkPipelineLayout</code> is created with a push constant range:<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>const</span><span> VkPushConstantRange push_constant_range {
+</span><span>    .</span><span style=color:#bf616a>stageFlags </span><span>= VK_SHADER_STAGE_ALL,
+</span><span>    .</span><span style=color:#bf616a>size </span><span>= </span><span style=color:#d08770>8</span><span>,
+</span><span>};
+</span></code></pre><p>This allows us to easily provide an index and offset to the buffer.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>PushConstant {
+</span><span>    uint buffer_index;
+</span><span>    uint buffer_offset;
+</span><span>};
+</span><span>
+</span><span>[[vk::push_constant]] 
+</span><span>ConstantBuffer&LTPushConstant> g_push_constant : </span><span style=color:#b48ead>register</span><span>(b0, space63);
+</span><span>
+</span><span style=color:#b48ead>template </span><span><</span><span style=color:#b48ead>typename</span><span> T>
+</span><span>T </span><span style=color:#8fa1b3>load_ubo</span><span>() {
+</span><span>    </span><span style=color:#b48ead>return</span><span> g_buffers[g_push_constant.</span><span style=color:#bf616a>buffer_index</span><span>].</span><span style=color:#bf616a>Load</span><span>&LTT>(g_push_constant.</span><span style=color:#bf616a>buffer_offset</span><span>);
+</span><span>}
+</span></code></pre><p>Vulkan allows <a href=https://registry.khronos.org/vulkan/specs/1.2-extensions/html/chap15.html#interfaces-resources-setandbinding>descriptor aliasing (15.8.2)</a> , which simplifies the code when working with shaders. This approach allows us to avoid writing multiple permutations, each occupying a different binding slot, by using aliases:<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span>[[vk::</span><span style=color:#bf616a>binding</span><span>(</span><span style=color:#d08770>0</span><span>, </span><span style=color:#d08770>1</span><span>)]] 
+</span><span>Texture1D<</span><span style=color:#b48ead>float</span><span>> g_textures1D_float[] : </span><span style=color:#b48ead>register</span><span>(t0, space2);
+</span><span>[[vk::</span><span style=color:#bf616a>binding</span><span>(</span><span style=color:#d08770>0</span><span>, </span><span style=color:#d08770>1</span><span>)]] 
+</span><span>Texture1D&LTfloat2> g_textures1D_float2[] : </span><span style=color:#b48ead>register</span><span>(t0, space3);
+</span><span>[[vk::</span><span style=color:#bf616a>binding</span><span>(</span><span style=color:#d08770>0</span><span>, </span><span style=color:#d08770>1</span><span>)]] 
+</span><span>Texture1D&LTfloat4> g_textures1D_float4[] : </span><span style=color:#b48ead>register</span><span>(t0, space4);
+</span></code></pre><p>The only requirement is to use the appropriate binding at runtime. Thankfully, validation layers can identify incorrect usage of descriptors.<h2 id=descriptor-management>Descriptor management</h2><p>On the CPU side, descriptor management operates by storing the index of the next available descriptor, along with an array of free indices that can be reused.<p>Simplified code:<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>DescriptorAllocator {
+</span><span>    core::Array&LTu32> free_indices;
+</span><span>    u32 first_free;
+</span><span>
+</span><span>    [[nodiscard]]
+</span><span>    u32 </span><span style=color:#8fa1b3>get_free_descriptor_index</span><span>() {
+</span><span>        </span><span style=color:#b48ead>if </span><span>(free_indices.</span><span style=color:#bf616a>empty</span><span>()) {
+</span><span>            </span><span style=color:#b48ead>const</span><span> u32 index = first_free;
+</span><span>            first_free += </span><span style=color:#d08770>1</span><span>;
+</span><span>            </span><span style=color:#b48ead>return</span><span> index;
+</span><span>        } </span><span style=color:#b48ead>else </span><span>{
+</span><span>            </span><span style=color:#b48ead>const</span><span> u32 index = free_indices.</span><span style=color:#bf616a>back</span><span>();
+</span><span>            free_indices.</span><span style=color:#bf616a>pop_back</span><span>();
+</span><span>            </span><span style=color:#b48ead>return</span><span> index;
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>push_to_free_list</span><span>(</span><span style=color:#b48ead>const</span><span> u32 </span><span style=color:#bf616a>descriptor_index</span><span>) {
+</span><span>        free_indices.</span><span style=color:#bf616a>push_back</span><span>(descriptor_index);
+</span><span>    }
+</span><span>};
+</span></code></pre><p>In Vulkan there is no difference between read-only and write buffers, in both cases they are <a href=https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html>storage buffers</a>, which means we only need to allocate one descriptor slot. If the buffer usage flags contain <code>SRV</code> or <code>UAV</code> flags, then the manager updates the descriptor set and returns a <code>BindableResource</code> struct with valid indices. Otherwise, it returns a <code>BindableResource</code> struct with invalid descriptor indices.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>BindableResource {
+</span><span>    </span><span style=color:#b48ead>static constexpr</span><span> u32 INVALID_INDEX = (</span><span style=color:#bf616a>u64</span><span>(</span><span style=color:#d08770>1</span><span>) << </span><span style=color:#d08770>32</span><span>) - </span><span style=color:#d08770>1</span><span>;
+</span><span>    u32 bindless_srv = INVALID_INDEX;
+</span><span>    u32 bindless_uav = INVALID_INDEX;
+</span><span>};
+</span></code></pre><pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span>rhi::BindableResource VulkanDescriptorBindlessManager::</span><span style=color:#8fa1b3>bind_buffer</span><span>(
+</span><span>    </span><span style=color:#b48ead>const</span><span> VulkanBuffer& buffer
+</span><span>) </span><span style=color:#b48ead>noexcept </span><span>{
+</span><span>    </span><span style=color:#b48ead>constexpr</span><span> u32 DESCRIPTOR_TYPE = BINDING_BUFFERS;
+</span><span>    </span><span style=color:#b48ead>const</span><span> rhi::BufferUsageFlags usage_flags = buffer.</span><span style=color:#bf616a>usage_flags</span><span>();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>contains</span><span>(usage_flags, rhi::BufferUsageFlags::SRV) ||
+</span><span>        </span><span style=color:#bf616a>contains</span><span>(usage_flags, rhi::BufferUsageFlags::UAV)) {
+</span><span>        </span><span style=color:#b48ead>const</span><span> u32 index = </span><span style=color:#bf616a>this</span><span>-></span><span style=color:#bf616a>get_free_descriptor_index</span><span>(DESCRIPTOR_TYPE);
+</span><span>
+</span><span>        </span><span style=color:#b48ead>const</span><span> VkDescriptorBufferInfo </span><span style=color:#bf616a>buffer_info </span><span>{
+</span><span>            .</span><span style=color:#bf616a>buffer </span><span>= buffer.</span><span style=color:#bf616a>buffer</span><span>(),
+</span><span>            .</span><span style=color:#bf616a>offset </span><span>= </span><span style=color:#d08770>0</span><span>,
+</span><span>            .</span><span style=color:#bf616a>range </span><span>= VK_WHOLE_SIZE,
+</span><span>        };
+</span><span>
+</span><span>        </span><span style=color:#b48ead>const</span><span> VkWriteDescriptorSet </span><span style=color:#bf616a>write </span><span>{
+</span><span>            .</span><span style=color:#bf616a>sType </span><span>= VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET,
+</span><span>            .</span><span style=color:#bf616a>dstSet </span><span>= </span><span style=color:#bf616a>m_descriptor_sets</span><span>[DESCRIPTOR_TYPE],
+</span><span>            .</span><span style=color:#bf616a>dstBinding </span><span>= </span><span style=color:#d08770>0</span><span>,
+</span><span>            .</span><span style=color:#bf616a>dstArrayElement </span><span>= index,
+</span><span>            .</span><span style=color:#bf616a>descriptorCount </span><span>= </span><span style=color:#d08770>1</span><span>,
+</span><span>            .</span><span style=color:#bf616a>descriptorType </span><span>= VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
+</span><span>            .</span><span style=color:#bf616a>pBufferInfo </span><span>= &buffer_info,
+</span><span>        };
+</span><span>
+</span><span>        </span><span style=color:#bf616a>m_raw_device</span><span>-></span><span style=color:#bf616a>get_device</span><span>().</span><span style=color:#bf616a>update_descriptor_sets</span><span>(core::</span><span style=color:#bf616a>as_span</span><span>(write), {});
+</span><span>
+</span><span>        </span><span style=color:#b48ead>return </span><span>rhi::</span><span style=color:#bf616a>BindableResource </span><span>{
+</span><span>            .</span><span style=color:#bf616a>bindless_srv </span><span>= </span><span style=color:#bf616a>contains</span><span>(usage_flags, rhi::BufferUsageFlags::SRV)
+</span><span>                                ? index
+</span><span>                                : rhi::BindableResource::INVALID_INDEX,
+</span><span>            .</span><span style=color:#bf616a>bindless_uav </span><span>= </span><span style=color:#bf616a>contains</span><span>(usage_flags, rhi::BufferUsageFlags::UAV)
+</span><span>                                ? index
+</span><span>                                : rhi::BindableResource::INVALID_INDEX,
+</span><span>        };
+</span><span>    } </span><span style=color:#b48ead>else </span><span>{
+</span><span>        </span><span style=color:#b48ead>return </span><span>rhi::</span><span style=color:#bf616a>BindableResource </span><span>{};
+</span><span>    }
+</span><span>}
+</span></code></pre><h2 id=the-future>The future</h2><p>Right now a resource handle is coupled with descriptor bindings. I think it is not the best approach. It increases handle size (two 32-bit integers), and indices are only really needed in the rendering code. Additionally it makes interacting with shaders a little bit annoying. <br> In the future, I would like to explore an alternative approach. Store all descriptor indices on the GPU and provide a mapping between resource handles and descriptor indices. Something very similar to <code>ResourceDescriptorHeap</code>. <a href=https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html><code>VK_EXT_descriptor_buffer</code></a> might be quite useful to implement this.<p>I'm not sure yet how the API supposed to look like and whether it's feasible to implement it in HLSL, but I'm considering something similar to this:<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>Ubo {
+</span><span>    BufferHandle&LTaccess::read_write> buffer;
+</span><span>};
+</span><span>
+</span><span>[</span><span style=color:#bf616a>numthreads</span><span>(</span><span style=color:#d08770>256</span><span>, </span><span style=color:#d08770>1</span><span>, </span><span style=color:#d08770>1</span><span>)] 
+</span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>main</span><span>(uint thread_id : </span><span style=color:#bf616a>SV_DispatchThreadID</span><span>) {
+</span><span>    </span><span style=color:#b48ead>const</span><span> Ubo ubo = tundra::</span><span style=color:#bf616a>load_ubo</span><span>&LTUbo>();
+</span><span>
+</span><span>    ByteBuffer&LTaccess::read_write> buffer = tundra::</span><span style=color:#bf616a>resource_heap</span><span>().</span><span style=color:#bf616a>load</span><span>(ubo.</span><span style=color:#bf616a>buffer</span><span>);
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint index = thread_id;
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint value = </span><span style=color:#d08770>0xfe</span><span>;
+</span><span>    buffer.</span><span style=color:#bf616a>write</span><span>&LTuint>(index, value);
+</span><span>}
+</span></code></pre><p>I would also simplify the buffer/image usage flags by using the Vulkan terminology of storage buffers/images instead of <code>SRV</code> and <code>UAV</code>. The RHI can generate the necessary bindings automatically, so the programmer no longer has to worry about which buffer flags to use<p>Something like this:<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>enum class </span><span>BufferUsageFlags : </span><span style=color:#a3be8c>u8 </span><span>{
+</span><span>    TRANSFER_SOURCE = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>0</span><span>,
+</span><span>    TRANSFER_DESTINATION = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>1</span><span>,
+</span><span>    STORAGE_BUFFER = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>2</span><span>,
+</span><span>    INDEX_BUFFER = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>3</span><span>,
+</span><span>    VERTEX_BUFFER = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>4</span><span>,
+</span><span>    INDIRECT_BUFFER = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>5</span><span>,
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>enum class </span><span>TextureUsageFlags : </span><span style=color:#a3be8c>u8 </span><span>{
+</span><span>    COLOR_ATTACHMENT = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>0</span><span>,
+</span><span>    DEPTH_ATTACHMENT = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>1</span><span>,
+</span><span>    STENCIL_ATTACHMENT = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>2</span><span>,
+</span><span>    SAMPLED = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>3</span><span>,
+</span><span>    STORAGE = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>4</span><span>,
+</span><span>    TRANSFER_SOURCE = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>5</span><span>,
+</span><span>    TRANSFER_DESTINATION = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>6</span><span>,
+</span><span>    PRESENT = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>7</span><span>,
+</span><span>};
+</span></code></pre><h1 id=command-buffers>Command buffers</h1><p>There are two important limitations to consider when using command pools in Vulkan:<ul><li>Command buffers allocated from a single pool can't be recorded simultaneously by multiple threads.<li>Command buffers and pools must not be freed or reset until the GPU has finished executing all associated commands.</ul><p>Therefore, it's necessary to have $Q \cdot F \cdot T$ pools, where:<ul><li>$Q$ represents the number of queues created.<li>$F$ represents the total number of frames in the flight.<li>$T$ represents the total number of threads that can record commands concurrently.</ul><p>It is also necessary to ensure that the GPU has finished executing all related command buffers by using <code>VkFence</code>.<p>Command buffers are not freed individually. Instead <code>vkResetCommandPool</code> is used. This approach is preferred by Arm <sup class=footnote-reference><a href=#1>1</a></sup>, for example.<p>One factor not considered by the current implementation is the potential for some passes to require less command memory. This could result in all command pools being sized for worst-case consumption, which is not ideal for devices with memory constraints.<p>The <code>VulkanCommandBufferManager</code> is implemented according to the above requirements.<ol><li>The <code>QueueThreadData</code> structure holds data relevant to a given thread. It contains: <ul><li><code>rhi::ResourceTracker::Resources</code> which stores the resources used by the command buffers. This allows the reference count for all resources to be tracked, and ensures that resources won't be destroyed while being used by the GPU.<li><code>VkCommandPool</code> associated with this thread.<li>Two double-ended queues that store free and currently used command buffers.</ul><li>The <code>QueueData</code> structure holds data related to a specific queue family. It includes: <ul><li>A thread-safe <code>core::Lock</code> that guards a <code>core::HashMap</code> containing thread-specific <code>QueueThreadData</code> structures.<li>An unsigned 32-bit integer (<code>u32</code>) denoting the index of the queue family.</ul><li>The <code>FrameData</code> stores the data given to a specific frame. <ul><li><code>QueueData</code> for each queue type. In a production-ready system, this should probably be for each used queue family, instead of predefined queue types.<li><code>VkFence</code> is used to synchronize between the GPU and CPU. A signaled fence indicates that the GPU has finished executing command buffers, and all references to the resources can be safely removed.</ul></ol><pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>class </span><span style=color:#ebcb8b>VulkanCommandBufferManager </span><span style=color:#eff1f5>{
+</span><span style=color:#b48ead>private</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>struct </span><span style=color:#eff1f5>QueueThreadData {
+</span><span style=color:#eff1f5>        rhi::ResourceTracker::Resources resources;
+</span><span style=color:#eff1f5>        VkCommandPool command_pool;
+</span><span style=color:#eff1f5>        core::Deque&LTVkCommandBuffer> free_command_buffers;
+</span><span style=color:#eff1f5>        core::Deque&LTVkCommandBuffer> used_command_buffers;
+</span><span style=color:#eff1f5>    };
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>struct </span><span style=color:#eff1f5>QueueData {
+</span><span style=color:#eff1f5>        core::Lock&LTcore::HashMap&LTu64, core::SharedPtr&LTQueueThreadData>>> thread_to_storage;
+</span><span style=color:#eff1f5>        u32 queue_family_index;
+</span><span style=color:#eff1f5>    };
+</span><span style=color:#eff1f5>
+</span><span style=color:#eff1f5>    </span><span style=color:#b48ead>struct </span><span style=color:#eff1f5>FrameData {
+</span><span style=color:#eff1f5>        QueueData graphics_queue;
+</span><span style=color:#eff1f5>        QueueData compute_queue;
+</span><span style=color:#eff1f5>        QueueData transfer_queue;
+</span><span style=color:#eff1f5>        QueueData present_queue;
+</span><span style=color:#eff1f5>        VkFence fence;
+</span><span style=color:#eff1f5>    };
+</span><span style=color:#eff1f5>
+</span><span style=color:#b48ead>private</span><span style=color:#eff1f5>:
+</span><span style=color:#eff1f5>    FrameData </span><span style=color:#bf616a>m_frame_data</span><span style=color:#eff1f5>[rhi::config::MAX_FRAMES_IN_FLIGHT];
+</span><span style=color:#eff1f5>}</span><span>;
+</span></code></pre><p>Before calling <code>get_command_bundle</code>, <code>wait_for_free_pool</code> must be called. The purpose of this function is to ensure that all the command buffers used in the previous frame have completed their execution through the use of <code>VkFence</code>, followed by the resetting of command pools and release of any resources referenced by the command buffers.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>void </span><span>VulkanCommandBufferManager::</span><span style=color:#8fa1b3>wait_for_free_pool</span><span>() </span><span style=color:#b48ead>noexcept </span><span>{
+</span><span>    </span><span style=color:#b48ead>const</span><span> u32 index = 
+</span><span>        *</span><span style=color:#bf616a>m_frame_counter</span><span>.</span><span style=color:#bf616a>lock</span><span>() % rhi::config::MAX_FRAMES_IN_FLIGHT;
+</span><span>    FrameData& frame_data = </span><span style=color:#bf616a>m_frame_data</span><span>[index];
+</span><span>
+</span><span>    </span><span style=color:#bf616a>vulkan_map_result</span><span>(
+</span><span>        </span><span style=color:#bf616a>m_raw_device
+</span><span>            -></span><span style=color:#bf616a>get_device</span><span>()
+</span><span>            .</span><span style=color:#bf616a>wait_for_fences</span><span>(
+</span><span>                core::</span><span style=color:#bf616a>as_span</span><span>(frame_data.</span><span style=color:#bf616a>fence</span><span>),
+</span><span>                </span><span style=color:#d08770>true</span><span>, 
+</span><span>                UINT64_MAX
+</span><span>            ),
+</span><span>        "</span><span style=color:#a3be8c>`wait_for_fences` failed</span><span>"
+</span><span>    );
+</span><span>
+</span><span>    </span><span style=color:#bf616a>vulkan_map_result</span><span>(
+</span><span>        </span><span style=color:#bf616a>m_raw_device
+</span><span>            -></span><span style=color:#bf616a>get_device</span><span>()
+</span><span>            .</span><span style=color:#bf616a>reset_fences</span><span>(core::</span><span style=color:#bf616a>as_span</span><span>(frame_data.</span><span style=color:#bf616a>fence</span><span>)),
+</span><span>        "</span><span style=color:#a3be8c>`reset_fences` failed</span><span>"
+</span><span>    );
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const auto</span><span> reset_command_pool = [&](QueueData& queue_data) {
+</span><span>        </span><span style=color:#b48ead>auto</span><span> thread_to_storage = queue_data.</span><span style=color:#bf616a>thread_to_storage</span><span>.</span><span style=color:#bf616a>lock</span><span>();
+</span><span>        </span><span style=color:#b48ead>for </span><span>(</span><span style=color:#b48ead>auto</span><span>& [_, thread_data] : *thread_to_storage) {
+</span><span>            </span><span style=color:#bf616a>vulkan_map_result</span><span>(
+</span><span>                </span><span style=color:#bf616a>m_raw_device
+</span><span>                    -></span><span style=color:#bf616a>get_device</span><span>()
+</span><span>                    .</span><span style=color:#bf616a>reset_command_pool</span><span>(thread_data-></span><span style=color:#bf616a>command_pool</span><span>, </span><span style=color:#d08770>0</span><span>),
+</span><span>                "</span><span style=color:#a3be8c>`reset_command_pool` failed</span><span>"
+</span><span>            );
+</span><span>
+</span><span>            thread_data-></span><span style=color:#bf616a>clear_used_commands</span><span>();
+</span><span>
+</span><span>            </span><span style=color:#65737e>// Destroy resources.
+</span><span>            </span><span style=color:#b48ead>for </span><span>(</span><span style=color:#b48ead>const</span><span> u64 resource : thread_data-></span><span style=color:#bf616a>resources</span><span>.</span><span style=color:#bf616a>resources</span><span>) {
+</span><span>                </span><span style=color:#bf616a>m_resource_tracker</span><span>-></span><span style=color:#bf616a>remove_reference</span><span>(resource);
+</span><span>            }
+</span><span>            thread_data-></span><span style=color:#bf616a>resources</span><span>.</span><span style=color:#bf616a>resources</span><span>.</span><span style=color:#bf616a>clear</span><span>();
+</span><span>        }
+</span><span>    };
+</span><span>
+</span><span>    </span><span style=color:#bf616a>reset_command_pool</span><span>(frame_data.</span><span style=color:#bf616a>graphics_queue</span><span>);
+</span><span>    </span><span style=color:#bf616a>reset_command_pool</span><span>(frame_data.</span><span style=color:#bf616a>compute_queue</span><span>);
+</span><span>    </span><span style=color:#bf616a>reset_command_pool</span><span>(frame_data.</span><span style=color:#bf616a>transfer_queue</span><span>);
+</span><span>    </span><span style=color:#bf616a>reset_command_pool</span><span>(frame_data.</span><span style=color:#bf616a>present_queue</span><span>);
+</span><span>}
+</span></code></pre><p>The implementation of <code>VulkanCommandBufferManager::get_command_bundle</code> is straightforward.<ol><li>Obtain <code>QueueData</code> based on the current frame counter.<li>Get thread data. It first acquires a lock on the <code>thread_to_storage</code>. If the thread ID is not present in the storage, a new command pool is created and associated with the thread ID.<li>The command buffer is obtained from the <code>thread_data</code>. If there are no free command buffers available, a new command buffer is allocated and added to the used command buffers. If there are free command buffers, an existing one is taken from the front of the free command buffer queue and moved to the used command buffer queue.<li>Finally, the function returns a <code>CommandBundle</code> object containing the acquired command buffer and associated thread data.</ol><pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span>CommandBundle VulkanCommandBufferManager::</span><span style=color:#8fa1b3>get_command_bundle</span><span>(
+</span><span>    </span><span style=color:#b48ead>const</span><span> rhi::QueueType queue_type
+</span><span>) </span><span style=color:#b48ead>noexcept </span><span>{
+</span><span>    </span><span style=color:#b48ead>const</span><span> u32 index = 
+</span><span>        *</span><span style=color:#bf616a>m_frame_counter</span><span>.</span><span style=color:#bf616a>lock</span><span>() % rhi::config::MAX_FRAMES_IN_FLIGHT;
+</span><span>    FrameData& frame_data = </span><span style=color:#bf616a>m_frame_data</span><span>[index];
+</span><span>    QueueData& queue_data = [&]() -> </span><span style=color:#bf616a>QueueData</span><span>& {
+</span><span>        </span><span style=color:#b48ead>switch </span><span>(queue_type) {
+</span><span>            </span><span style=color:#b48ead>case</span><span> rhi::QueueType::Compute:
+</span><span>                </span><span style=color:#b48ead>return</span><span> frame_data.</span><span style=color:#bf616a>compute_queue</span><span>;
+</span><span>            </span><span style=color:#b48ead>case</span><span> rhi::QueueType::Graphics:
+</span><span>                </span><span style=color:#b48ead>return</span><span> frame_data.</span><span style=color:#bf616a>graphics_queue</span><span>;
+</span><span>            </span><span style=color:#b48ead>case</span><span> rhi::QueueType::Transfer:
+</span><span>                </span><span style=color:#b48ead>return</span><span> frame_data.</span><span style=color:#bf616a>transfer_queue</span><span>;
+</span><span>            </span><span style=color:#b48ead>case</span><span> rhi::QueueType::Present:
+</span><span>                </span><span style=color:#b48ead>return</span><span> frame_data.</span><span style=color:#bf616a>present_queue</span><span>;
+</span><span>        }
+</span><span>
+</span><span>        core::</span><span style=color:#bf616a>panic</span><span>("</span><span style=color:#a3be8c>Invalid enum</span><span>");
+</span><span>    }();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>auto</span><span> thread_data = [&] {
+</span><span>        </span><span style=color:#b48ead>auto</span><span> thread_to_storage = queue_data.</span><span style=color:#bf616a>thread_to_storage</span><span>.</span><span style=color:#bf616a>lock</span><span>();
+</span><span>        </span><span style=color:#b48ead>if </span><span>(!thread_to_storage-></span><span style=color:#bf616a>contains</span><span>(THREAD_ID)) {
+</span><span>            </span><span style=color:#b48ead>const</span><span> VkCommandPoolCreateInfo </span><span style=color:#bf616a>create_info </span><span>{
+</span><span>                .</span><span style=color:#bf616a>sType </span><span>= VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+</span><span>                .</span><span style=color:#bf616a>queueFamilyIndex </span><span>= queue_data.</span><span style=color:#bf616a>queue_family_index</span><span>,
+</span><span>            };
+</span><span>
+</span><span>            </span><span style=color:#b48ead>const</span><span> VkCommandPool command_pool = </span><span style=color:#bf616a>vulkan_map_result</span><span>(
+</span><span>                </span><span style=color:#bf616a>m_raw_device
+</span><span>                    -></span><span style=color:#bf616a>get_device</span><span>()
+</span><span>                    .</span><span style=color:#bf616a>create_command_pool</span><span>(create_info, </span><span style=color:#d08770>nullptr</span><span>),
+</span><span>                "</span><span style=color:#a3be8c>`create_command_pool` failed</span><span>"
+</span><span>            );
+</span><span>
+</span><span>            thread_to_storage-></span><span style=color:#bf616a>emplace</span><span>(
+</span><span>                THREAD_ID,
+</span><span>                core::</span><span style=color:#bf616a>make_shared</span><span>&LTQueueThreadData>(</span><span style=color:#bf616a>QueueThreadData </span><span>{
+</span><span>                    .</span><span style=color:#bf616a>command_pool </span><span>= command_pool,
+</span><span>                })
+</span><span>            );
+</span><span>        }
+</span><span>
+</span><span>        </span><span style=color:#b48ead>return</span><span> thread_to_storage-></span><span style=color:#bf616a>at</span><span>(THREAD_ID);
+</span><span>    }();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const</span><span> VkCommandBuffer command_buffer = [&] {
+</span><span>        </span><span style=color:#b48ead>if </span><span>(thread_data-></span><span style=color:#bf616a>free_command_buffers</span><span>.</span><span style=color:#bf616a>empty</span><span>()) {
+</span><span>            </span><span style=color:#b48ead>const</span><span> VkCommandBufferAllocateInfo </span><span style=color:#bf616a>allocate_info </span><span>{
+</span><span>                .</span><span style=color:#bf616a>sType </span><span>= VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+</span><span>                .</span><span style=color:#bf616a>commandPool </span><span>= thread_data-></span><span style=color:#bf616a>command_pool</span><span>,
+</span><span>                .</span><span style=color:#bf616a>level </span><span>= VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+</span><span>                .</span><span style=color:#bf616a>commandBufferCount </span><span>= </span><span style=color:#d08770>1</span><span>,
+</span><span>            };
+</span><span>
+</span><span>            </span><span style=color:#b48ead>const</span><span> VkCommandBuffer command_buffer = </span><span style=color:#bf616a>vulkan_map_result</span><span>(
+</span><span>                </span><span style=color:#bf616a>m_raw_device
+</span><span>                    -></span><span style=color:#bf616a>get_device</span><span>()
+</span><span>                    .</span><span style=color:#bf616a>allocate_command_buffers</span><span>(allocate_info),
+</span><span>                "</span><span style=color:#a3be8c>`allocate_command_buffers` failed</span><span>"
+</span><span>            )[</span><span style=color:#d08770>0</span><span>];
+</span><span>
+</span><span>            thread_data-></span><span style=color:#bf616a>used_command_buffers</span><span>.</span><span style=color:#bf616a>push_back</span><span>(command_buffer);
+</span><span>            </span><span style=color:#b48ead>return</span><span> command_buffer;
+</span><span>        }
+</span><span>
+</span><span>        </span><span style=color:#b48ead>const</span><span> VkCommandBuffer command_buffer = 
+</span><span>            thread_data-></span><span style=color:#bf616a>free_command_buffers</span><span>.</span><span style=color:#bf616a>front</span><span>();
+</span><span>        thread_data-></span><span style=color:#bf616a>free_command_buffers</span><span>.</span><span style=color:#bf616a>pop_front</span><span>();
+</span><span>        thread_data-></span><span style=color:#bf616a>used_command_buffers</span><span>.</span><span style=color:#bf616a>push_back</span><span>(command_buffer);
+</span><span>        </span><span style=color:#b48ead>return</span><span> command_buffer;
+</span><span>    }();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>return </span><span>VulkanCommandBufferManager::</span><span style=color:#bf616a>CommandBundle </span><span>{
+</span><span>        .</span><span style=color:#bf616a>command_buffer </span><span>= command_buffer,
+</span><span>        .</span><span style=color:#bf616a>thread_data </span><span>= core::</span><span style=color:#bf616a>move</span><span>(thread_data),
+</span><span>    };
+</span><span>}
+</span></code></pre><h1 id=mesh-processing>Mesh processing</h1><p>The initial step involves converting the mesh into meshlets using the <a href=https://github.com/zeux/meshoptimizer>meshoptimizer</a> library.<p>Meshlets are very small chunks of the mesh, offering a way to optimize the rendering of complex 3D models, by offloading culling tasks to the GPU. Nvidia has a very nice article about them<sup class=footnote-reference><a href=#2>2</a></sup>.<h1 id=rendering>Rendering</h1><blockquote><p><strong>Note</strong><p>The AMD RX 480 graphics card was used for all performance measurements presented here.</blockquote><h2 id=data-structures>Data structures</h2><h3 id=mesh-descriptor>Mesh Descriptor</h3><p>Each mesh is made out of one buffer. It contains everything, meshlets, meshlet triangles and so on. <img title="Mesh data buffer layout" alt src=/img/tundra_behind_the_scenes/mesh-buffer-layout.png><p>Mesh descriptors are stored in an array and each of them contains all necessary data for culling and retrieval of vertex data.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>enum </span><span>VertexBufferLayout : </span><span style=color:#a3be8c>uint </span><span>{
+</span><span>    POSITIONS_BIT = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>0</span><span>,
+</span><span>    NORMALS_BIT = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>1</span><span>,
+</span><span>    TANGENTS_BIT = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>2</span><span>,
+</span><span>    UV0_BIT = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>3</span><span>,
+</span><span>    UV1_BIT = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>4</span><span>,
+</span><span>    UV2_BIT = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>5</span><span>,
+</span><span>    MAX_VALUE = </span><span style=color:#d08770>1 </span><span><< </span><span style=color:#d08770>6</span><span>,
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>struct </span><span>MeshDescriptor {
+</span><span>    float3 center;
+</span><span>    </span><span style=color:#b48ead>float</span><span> radius;
+</span><span>
+</span><span>    uint mesh_data_buffer_srv;
+</span><span>
+</span><span>    uint meshlet_count;
+</span><span>
+</span><span>    uint meshlet_triangles_offset;
+</span><span>    uint meshlet_triangles_count;
+</span><span>
+</span><span>    uint meshlet_vertices_offset;
+</span><span>    uint meshlet_vertices_count;
+</span><span>
+</span><span>    uint vertex_buffer_offset;
+</span><span>    uint vertex_count;
+</span><span>
+</span><span>    VertexBufferLayout vertex_buffer_layout;
+</span><span>};
+</span></code></pre><h3 id=meshlets>Meshlets</h3><p>Each mesh consists of small meshlets which include details about the sphere's center and radius that encloses the meshlet, which is used in frustum culling. In addition, the meshlet contains offsets to the meshlet data buffer for both the triangles and the vertices.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>Meshlet {
+</span><span>    float3 center;
+</span><span>    </span><span style=color:#b48ead>float</span><span> radius;
+</span><span>
+</span><span>    uint cone_axis_and_cutoff;
+</span><span>
+</span><span>    uint triangle_offset;
+</span><span>    uint triangle_count;
+</span><span>    uint vertex_offset;
+</span><span>    uint vertex_count;
+</span><span>};
+</span></code></pre><h3 id=scene>Scene</h3><p>The scene made up of a collection of mesh instances and their associated transforms. Each instance includes an index to a mesh descriptor and its respective transform.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>MeshInstance {
+</span><span>    uint mesh_descriptor_index;
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>struct </span><span>InstanceTransform {
+</span><span>    float4 quat;
+</span><span>    float3 position;
+</span><span>    </span><span style=color:#b48ead>float</span><span> scale;
+</span><span>};
+</span></code></pre><h2 id=helper-functions>Helper functions</h2><p>Most functions related to buffers are encapsulated in their own templated functions, mostly to avoid bugs in offset calculations.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>template </span><span><</span><span style=color:#b48ead>bool</span><span> non_uniform, </span><span style=color:#b48ead>typename</span><span> T>
+</span><span>T </span><span style=color:#8fa1b3>buffer_load</span><span>(
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint </span><span style=color:#bf616a>buffer_index</span><span>, 
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint </span><span style=color:#bf616a>offset</span><span>, 
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint index
+</span><span>) {
+</span><span>    </span><span style=color:#b48ead>if </span><span>(non_uniform) {
+</span><span>        </span><span style=color:#b48ead>return</span><span> g_buffers[</span><span style=color:#bf616a>NonUniformResourceIndex</span><span>(buffer_index)]
+</span><span>            .</span><span style=color:#bf616a>Load</span><span>&LTT>(offset + (index * sizeof(T)));
+</span><span>    } </span><span style=color:#b48ead>else </span><span>{
+</span><span>        </span><span style=color:#b48ead>return</span><span> g_buffers[buffer_index]
+</span><span>            .</span><span style=color:#bf616a>Load</span><span>&LTT>(offset + (index * sizeof(T)));
+</span><span>    }
+</span><span>}
+</span></code></pre><h2 id=uniform-buffers>Uniform buffers</h2><p>Tundra does not use conventional uniform buffers, but instead uses push constants to load uniform data.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>PushConstant {
+</span><span>    uint buffer_index;
+</span><span>    uint buffer_offset;
+</span><span>};
+</span><span>
+</span><span>[[vk::push_constant]] 
+</span><span>ConstantBuffer&LTPushConstant> g_push_constant : </span><span style=color:#b48ead>register</span><span>(b0, space63);
+</span><span>
+</span><span style=color:#b48ead>template </span><span><</span><span style=color:#b48ead>typename</span><span> T>
+</span><span>T </span><span style=color:#8fa1b3>load_ubo</span><span>() {
+</span><span>    </span><span style=color:#b48ead>return</span><span> g_buffers[g_push_constant.</span><span style=color:#bf616a>buffer_index</span><span>].</span><span style=color:#bf616a>Load</span><span>&LTT>(g_push_constant.</span><span style=color:#bf616a>buffer_offset</span><span>);
+</span><span>}
+</span></code></pre><h2 id=instance-culling>Instance culling</h2><p>The rendering pipeline begins with instance culling, which aims to reduce the GPU workload by removing instances that are not visible within the camera frustum. To achieve this, compute shader is used.<p>Each thread performs instance culling independently. The number of instances to process is defined by <code>num_instances</code> stored inside of ubo. The <code>instance_id</code> is represented by <code>SV_DispatchThreadID</code><p>Data for the current instance is loaded from input buffers using the <code>tundra::buffer_load</code> function, after that frustum culling is performed.<p>The compute shader uses wave intrinsics to reduce the amount of atomic operations (one atomic operation per entire wave). <code>WaveActiveCountBits</code> provides the number of visible instances in the current wave, while <code>WavePrefixCountBits</code> provides the index offset within the active wave where the instance must be stored if it is visible. <code>WaveReadLaneFirst</code> is also used to broadcast the global offset to other threads. This eliminates the need for barriers.<p>The shader returns an array of <code>VisibleMeshInstance</code> and <code>DispatchIndirectCommand</code> that will be used in a dispatch indirect.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>InstanceCullingUBO {
+</span><span>    float4 frustum_planes[</span><span style=color:#d08770>6</span><span>];
+</span><span>    uint num_instances;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>struct </span><span>{
+</span><span>        uint mesh_descriptors_srv;
+</span><span>        uint mesh_instances_srv;
+</span><span>        uint mesh_instance_transforms_srv;
+</span><span>    } in_;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>struct </span><span>{
+</span><span>        uint visible_mesh_instances_uav;
+</span><span>        uint meshlet_culling_dispatch_args_uav;
+</span><span>    } out_;
+</span><span>};
+</span><span>
+</span><span>[</span><span style=color:#bf616a>numthreads</span><span>(</span><span style=color:#d08770>128</span><span>, </span><span style=color:#d08770>1</span><span>, </span><span style=color:#d08770>1</span><span>)] 
+</span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>main</span><span>(uint thread_id : </span><span style=color:#bf616a>SV_DispatchThreadID</span><span>) {
+</span><span>    </span><span style=color:#b48ead>const</span><span> InstanceCullingUBO ubo = tundra::</span><span style=color:#bf616a>load_ubo</span><span>&LTInstanceCullingUBO>();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint num_instances = ubo.</span><span style=color:#bf616a>num_instances</span><span>;
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint instance_index = thread_id;
+</span><span>
+</span><span>    MeshInstance mesh_instance;
+</span><span>    InstanceTransform instance_transform;
+</span><span>    MeshDescriptor mesh_descriptor;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>bool</span><span> is_visible = </span><span style=color:#d08770>false</span><span>;
+</span><span>    </span><span style=color:#b48ead>if </span><span>(instance_index < num_instances) {
+</span><span>        instance_transform = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, InstanceTransform>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>mesh_instance_transforms_srv</span><span>, </span><span style=color:#d08770>0</span><span>, instance_index);
+</span><span>        mesh_instance = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, MeshInstance>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>mesh_instances_srv</span><span>, </span><span style=color:#d08770>0</span><span>, instance_index);
+</span><span>        mesh_descriptor = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, MeshDescriptor>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>mesh_descriptors_srv</span><span>, </span><span style=color:#d08770>0</span><span>, mesh_instance.</span><span style=color:#bf616a>mesh_descriptor_index</span><span>);
+</span><span>
+</span><span>        is_visible = </span><span style=color:#bf616a>cull_frustum_mesh_instance</span><span>(ubo, mesh_descriptor, instance_transform);
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint index_offset = </span><span style=color:#bf616a>WavePrefixCountBits</span><span>(is_visible);
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint visible_instance_count = </span><span style=color:#bf616a>WaveActiveCountBits</span><span>(is_visible);
+</span><span>
+</span><span>    uint global_index_offset = </span><span style=color:#d08770>0</span><span>;
+</span><span>    </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>WaveIsFirstLane</span><span>()) {
+</span><span>        tundra::</span><span style=color:#bf616a>buffer_interlocked_add</span><span><</span><span style=color:#d08770>false</span><span>>(
+</span><span>            ubo.</span><span style=color:#bf616a>out_</span><span>.</span><span style=color:#bf616a>meshlet_culling_dispatch_args_uav</span><span>,
+</span><span>            </span><span style=color:#d08770>0</span><span>,
+</span><span>            visible_instance_count,
+</span><span>            global_index_offset
+</span><span>        );
+</span><span>    }
+</span><span>
+</span><span>    global_index_offset = </span><span style=color:#bf616a>WaveReadLaneFirst</span><span>(global_index_offset);
+</span><span>
+</span><span>    </span><span style=color:#b48ead>if </span><span>(is_visible && (instance_index < num_instances)) {
+</span><span>        tundra::</span><span style=color:#bf616a>buffer_store</span><span><</span><span style=color:#d08770>false</span><span>>(
+</span><span>            ubo.</span><span style=color:#bf616a>out_</span><span>.</span><span style=color:#bf616a>visible_mesh_instances_uav</span><span>,
+</span><span>            </span><span style=color:#d08770>0</span><span>,
+</span><span>            global_index_offset + index_offset,
+</span><span>            VisibleMeshInstance::</span><span style=color:#bf616a>create</span><span>(
+</span><span>                mesh_instance.</span><span style=color:#bf616a>mesh_descriptor_index</span><span>, 
+</span><span>                instance_index, 
+</span><span>                </span><span style=color:#d08770>0
+</span><span>            )
+</span><span>        );
+</span><span>    }
+</span><span>}
+</span></code></pre><p>The compute shader is dispatched with the number of instances in the scene, rounded up to 128.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span>encoder.</span><span style=color:#bf616a>dispatch</span><span>(
+</span><span>    instance_culling_pipeline,
+</span><span>    CommandEncoder::</span><span style=color:#bf616a>get_group_count</span><span>(input.</span><span style=color:#bf616a>instance_count</span><span>, </span><span style=color:#d08770>128</span><span>),
+</span><span>    </span><span style=color:#d08770>1</span><span>,
+</span><span>    </span><span style=color:#d08770>1
+</span><span>);
+</span></code></pre><h2 id=meshlet-culling>Meshlet culling</h2><p>The meshlet culling shader is a slightly modified instance culling shader. The core algorithm stays mostly the same but instead of working on instances, it works on instance meshlets in a for loop.<p>The number of iterations is determined by rounding up division: $$ \frac{meshlet\_count + (NUM\_THREADS\_X - 1)}{NUM\_THREADS\_X} $$<p>For example $\frac{385 + (128 - 1)}{128}$ would give 4 iterations. The meshlet index is computed by $group\_thread\_id + (i * NUM\_THREADS\_X)$.<p>To determine if a meshlet is visible, the position of the meshlet is transformed. Then a frustum sphere culling is performed. The remainder of the algorithm functions identically to instance culling.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>#define </span><span>NUM_THREADS_X </span><span style=color:#d08770>128
+</span><span>
+</span><span style=color:#b48ead>struct </span><span>MeshletCullingUBO {
+</span><span>    float4x4 projection;
+</span><span>    float4x4 world_to_view;
+</span><span>    float4 frustum_planes[</span><span style=color:#d08770>6</span><span>];
+</span><span>    </span><span style=color:#b48ead>float</span><span> z_near;
+</span><span>    uint max_meshlet_count;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>struct </span><span>{
+</span><span>        uint visible_mesh_instances_srv;
+</span><span>        uint mesh_descriptors_srv;
+</span><span>        uint mesh_instance_transforms_srv;
+</span><span>        uint previous_frame_depth_texture_srv;
+</span><span>        uint depth_texture_sampler;
+</span><span>    } in_;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>struct </span><span>{
+</span><span>        uint visible_meshlets_uav;
+</span><span>        uint visible_meshlets_count_uav;
+</span><span>    } out_;
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>struct </span><span>Input {
+</span><span>    uint instance_index : SV_GroupID;
+</span><span>    uint meshlet_index : SV_GroupThreadID;
+</span><span>    uint thread_id : SV_DispatchThreadID;
+</span><span>};
+</span><span>
+</span><span>[</span><span style=color:#bf616a>numthreads</span><span>(NUM_THREADS_X, </span><span style=color:#d08770>1</span><span>, </span><span style=color:#d08770>1</span><span>)] 
+</span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>main</span><span>(</span><span style=color:#b48ead>const</span><span> Input </span><span style=color:#bf616a>input</span><span>) {
+</span><span>    </span><span style=color:#b48ead>const</span><span> MeshletCullingUBO ubo = tundra::</span><span style=color:#bf616a>load_ubo</span><span>&LTMeshletCullingUBO>();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const</span><span> VisibleMeshInstance visible_mesh_instance
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, VisibleMeshInstance>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>visible_mesh_instances_srv</span><span>, 
+</span><span>            </span><span style=color:#d08770>0</span><span>, 
+</span><span>            input.</span><span style=color:#bf616a>instance_index
+</span><span>        );
+</span><span>    </span><span style=color:#b48ead>const</span><span> MeshDescriptor mesh_descriptor 
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>true</span><span>, MeshDescriptor>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>mesh_descriptors_srv</span><span>, 
+</span><span>            </span><span style=color:#d08770>0</span><span>, 
+</span><span>            visible_mesh_instance.</span><span style=color:#bf616a>mesh_descriptor_index
+</span><span>        );
+</span><span>    </span><span style=color:#b48ead>const</span><span> InstanceTransform instance_transform
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, InstanceTransform>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>mesh_instance_transforms_srv</span><span>,
+</span><span>            </span><span style=color:#d08770>0</span><span>,
+</span><span>            visible_mesh_instance.</span><span style=color:#bf616a>instance_transform_index
+</span><span>        );
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint num_loops
+</span><span>        = (mesh_descriptor.</span><span style=color:#bf616a>meshlet_count </span><span>+ (NUM_THREADS_X - </span><span style=color:#d08770>1</span><span>))
+</span><span>          / NUM_THREADS_X;                           
+</span><span>
+</span><span>    </span><span style=color:#b48ead>for </span><span>(uint i = </span><span style=color:#d08770>0</span><span>; i < num_loops; ++i) {
+</span><span>        </span><span style=color:#b48ead>const </span><span>uint meshlet_index = input.</span><span style=color:#bf616a>meshlet_index </span><span>+ (i * NUM_THREADS_X);
+</span><span>
+</span><span>        </span><span style=color:#b48ead>bool</span><span> is_visible = </span><span style=color:#d08770>false</span><span>;
+</span><span>        </span><span style=color:#b48ead>if </span><span>(meshlet_index < mesh_descriptor.</span><span style=color:#bf616a>meshlet_count</span><span>) {
+</span><span>            </span><span style=color:#b48ead>const</span><span> Meshlet meshlet = mesh_descriptor.</span><span style=color:#bf616a>get_meshlet</span><span>(meshlet_index);
+</span><span>
+</span><span>            </span><span style=color:#b48ead>const</span><span> float3 center
+</span><span>                = </span><span style=color:#bf616a>mul</span><span>(ubo.</span><span style=color:#bf616a>world_to_view</span><span>,
+</span><span>                      </span><span style=color:#bf616a>float4</span><span>(
+</span><span>                          ((</span><span style=color:#bf616a>quat_rotate_vector</span><span>(instance_transform.</span><span style=color:#bf616a>quat</span><span>, meshlet.</span><span style=color:#bf616a>center</span><span>)
+</span><span>                            * instance_transform.</span><span style=color:#bf616a>scale</span><span>)
+</span><span>                           + instance_transform.</span><span style=color:#bf616a>position</span><span>),
+</span><span>                          </span><span style=color:#d08770>1
+</span><span>                      ))
+</span><span>                      .</span><span style=color:#bf616a>xyz</span><span>;
+</span><span>
+</span><span>            </span><span style=color:#b48ead>const float</span><span> radius = meshlet.</span><span style=color:#bf616a>radius</span><span>;
+</span><span>            is_visible = </span><span style=color:#bf616a>frustum_culling</span><span>(ubo.</span><span style=color:#bf616a>frustum_planes</span><span>, center, radius);
+</span><span>        }
+</span><span>
+</span><span>        </span><span style=color:#b48ead>const </span><span>uint meshlet_offset = </span><span style=color:#bf616a>WavePrefixCountBits</span><span>(is_visible);
+</span><span>        </span><span style=color:#b48ead>const </span><span>uint visible_meshlet_count = </span><span style=color:#bf616a>WaveActiveCountBits</span><span>(is_visible);
+</span><span>
+</span><span>        uint global_meshlet_offset = </span><span style=color:#d08770>0</span><span>;
+</span><span>        </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>WaveIsFirstLane</span><span>()) {
+</span><span>            tundra::</span><span style=color:#bf616a>buffer_interlocked_add</span><span><</span><span style=color:#d08770>false</span><span>>(
+</span><span>                ubo.</span><span style=color:#bf616a>out_</span><span>.</span><span style=color:#bf616a>visible_meshlets_count_uav</span><span>,
+</span><span>                </span><span style=color:#d08770>0</span><span>,
+</span><span>                visible_meshlet_count,
+</span><span>                global_meshlet_offset
+</span><span>            );
+</span><span>        }
+</span><span>
+</span><span>        global_meshlet_offset = </span><span style=color:#bf616a>WaveReadLaneFirst</span><span>(global_meshlet_offset);
+</span><span>
+</span><span>        </span><span style=color:#b48ead>if </span><span>(is_visible && (meshlet_index < mesh_descriptor.</span><span style=color:#bf616a>meshlet_count</span><span>)) {
+</span><span>            tundra::</span><span style=color:#bf616a>buffer_store</span><span><</span><span style=color:#d08770>false</span><span>>(
+</span><span>                ubo.</span><span style=color:#bf616a>out_</span><span>.</span><span style=color:#bf616a>visible_meshlets_uav</span><span>,
+</span><span>                </span><span style=color:#d08770>0</span><span>,
+</span><span>                global_meshlet_offset + meshlet_offset,
+</span><span>                VisibleMeshlet::</span><span style=color:#bf616a>create</span><span>(
+</span><span>                    visible_mesh_instance.</span><span style=color:#bf616a>mesh_descriptor_index</span><span>,
+</span><span>                    meshlet_index,
+</span><span>                    visible_mesh_instance.</span><span style=color:#bf616a>instance_transform_index
+</span><span>                )
+</span><span>            ); 
+</span><span>        }
+</span><span>    }
+</span><span>}
+</span></code></pre><h2 id=software-rasterization>Software rasterization</h2><p>Unfortunately, the minimum required number of compute work groups per dimension equals to <code>65535</code>, and roughly 54% of devices have a limit of around 65k for <code>maxComputeWorkGroupCount[0]</code>. The remaining devices support at least one billion<sup class=footnote-reference><a href=#3>3</a></sup>. <br> This means that without any other solution, we would only be able to render about 65k meshlets. One solution to this problem is to implement a work queue. However, we have to make sure that we are not using any spin locks, <a href=https://www.khronos.org/blog/comparing-the-vulkan-spir-v-memory-model-to-cs#_limited_forward_progress_guarantees>because there are no guarantees about forward progress in Vulkan</a>.<p>Another way to solve this limitation is to represent meshlet index as <code>x * 128 * 1</code>.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span>DispatchIndirectCommand::</span><span style=color:#8fa1b3>create</span><span>(
+</span><span>    </span><span style=color:#bf616a>min</span><span>(((num_visible_meshlets + </span><span style=color:#d08770>127</span><span>) / </span><span style=color:#d08770>128</span><span>), </span><span style=color:#d08770>65535</span><span>), 
+</span><span>    </span><span style=color:#d08770>128</span><span>,
+</span><span>    </span><span style=color:#d08770>1
+</span><span>)
+</span></code></pre><p>That allows us to render about 8.3 million meshlets(<code>65535 * 128</code>) which equals to about 1 billion triangles. To calculate the meshlet index we can do a simple calculation:<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>const </span><span>uint meshlet_index = group_id.</span><span style=color:#bf616a>x </span><span>* </span><span style=color:#d08770>128 </span><span>+ group_id.</span><span style=color:#bf616a>y
+</span></code></pre><p>The end result of this technique is that we can render more than 65k triangles. In this particular scenario with only frustum culling, we are rendering 1.6 million meshlets and approximately 170 millions triangles. <img title="1000 cars, each made out of 1620 meshlets and 105'514 triangles" alt src=/img/tundra_behind_the_scenes/1000-cars.png><p>Without any optimizations it renders the scene in about 22ms. I'm very curious to see how it compares to mesh shaders. Unfortunately I do not have a GPU that supports them. <img title="Radeon GPU Profiler event timing view" alt src=/img/tundra_behind_the_scenes/1000-cars-rgp-event-timing.png><p><img title="Radeon GPU Profiler shader occupancy view" alt src=/img/tundra_behind_the_scenes/rgp-occupancy-1000-cars-rasterizer.png></p><br><p>The process of rasterizing begins by loading meshlet details, followed by loading indices with transformed vertices into group-shared memory. The barrier ensures that all data is loaded before starting rasterization. After that each thread in the group will rasterize its own triangle.<p>The rasterization algorithm was implemented using a basic scanline rasterizer. There are certainly more efficient rasterization algorithms, so there is definitely a room for performance improvement.<p>The shader returns a texture made out of <code>uint64_t</code> integers containing meshlet and triangle index in lower 32 bits, and depth value in upper 32 bits. <code>InterlockedMax</code> is used to select the pixel that is closer to the camera.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>void </span><span style=color:#8fa1b3>write_pixel</span><span>(
+</span><span>    RWTexture2D&LTuint64_t> </span><span style=color:#bf616a>texture</span><span>,
+</span><span>    </span><span style=color:#b48ead>const</span><span> uint2 </span><span style=color:#bf616a>pixel_pos</span><span>,
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint </span><span style=color:#bf616a>meshlet_index</span><span>,
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint </span><span style=color:#bf616a>triangle_index</span><span>,
+</span><span>    </span><span style=color:#b48ead>const float</span><span> depth
+</span><span>) {
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint meshlet_triangle = (meshlet_index << VERTEX_ID_BITS) | triangle_index;
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint depth_uint = </span><span style=color:#bf616a>asuint</span><span>(depth);
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint64_t value = (((uint64_t)depth_uint << (uint64_t)</span><span style=color:#d08770>32</span><span>)) | meshlet_triangle;
+</span><span>    </span><span style=color:#bf616a>InterlockedMax</span><span>(texture[pixel_pos], value);
+</span><span>}
+</span></code></pre><pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>GPURasterizeUBO {
+</span><span>    float4x4 world_to_clip;
+</span><span>    uint2 view_size;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>struct </span><span>{
+</span><span>        uint mesh_instance_transforms_srv;
+</span><span>        uint mesh_descriptors_srv;
+</span><span>        uint visible_meshlets_srv;
+</span><span>        uint visible_meshlets_count_srv;
+</span><span>    } in_;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>struct </span><span>{
+</span><span>        uint output_texture_uav;
+</span><span>    } out_;
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>struct </span><span>Input {
+</span><span>    uint meshlet_index : SV_GroupID;
+</span><span>    uint triangle_index : SV_GroupThreadID;
+</span><span>};
+</span><span>
+</span><span>groupshared uint3 g_indices[</span><span style=color:#d08770>128</span><span>];
+</span><span>groupshared float3 g_vertices[</span><span style=color:#d08770>64</span><span>];
+</span><span>
+</span><span>[</span><span style=color:#bf616a>numthreads</span><span>(</span><span style=color:#d08770>128</span><span>, </span><span style=color:#d08770>1</span><span>, </span><span style=color:#d08770>1</span><span>)] 
+</span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>main</span><span>(</span><span style=color:#b48ead>const</span><span> Input </span><span style=color:#bf616a>input</span><span>) {
+</span><span>    </span><span style=color:#b48ead>const</span><span> GPURasterizeUBO ubo = tundra::</span><span style=color:#bf616a>load_ubo</span><span>&LTGPURasterizeUBO>();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint visible_meshlets_count 
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, uint>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>visible_meshlets_count_srv</span><span>, 
+</span><span>            </span><span style=color:#d08770>0</span><span>, 
+</span><span>            </span><span style=color:#d08770>0
+</span><span>        );
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint meshlet_index = input.</span><span style=color:#bf616a>group_id</span><span>.</span><span style=color:#bf616a>x </span><span>* </span><span style=color:#d08770>128 </span><span>+ input.</span><span style=color:#bf616a>group_id</span><span>.</span><span style=color:#bf616a>y</span><span>;
+</span><span>    </span><span style=color:#b48ead>if </span><span>(meshlet_index >= visible_meshlets_count) {
+</span><span>        </span><span style=color:#b48ead>return</span><span>;
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const</span><span> VisibleMeshlet visible_meshlet 
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, VisibleMeshlet>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>visible_meshlets_srv</span><span>, 
+</span><span>            </span><span style=color:#d08770>0</span><span>, 
+</span><span>            meshlet_index
+</span><span>        );
+</span><span>    </span><span style=color:#b48ead>const</span><span> InstanceTransform instance_transform
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, InstanceTransform>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>mesh_instance_transforms_srv</span><span>,
+</span><span>            </span><span style=color:#d08770>0</span><span>,
+</span><span>            visible_meshlet.</span><span style=color:#bf616a>instance_transform_index
+</span><span>        );
+</span><span>    </span><span style=color:#b48ead>const</span><span> MeshDescriptor mesh_descriptor 
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, MeshDescriptor>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>mesh_descriptors_srv</span><span>,
+</span><span>            </span><span style=color:#d08770>0</span><span>, 
+</span><span>            visible_meshlet.</span><span style=color:#bf616a>mesh_descriptor_index
+</span><span>        );
+</span><span>    </span><span style=color:#b48ead>const</span><span> Meshlet meshlet 
+</span><span>        = mesh_descriptor.</span><span style=color:#bf616a>get_meshlet</span><span>(visible_meshlet.</span><span style=color:#bf616a>meshlet_index</span><span>);
+</span><span>
+</span><span>    </span><span style=color:#65737e>/////////////////////////////////////////////////////////////////////////////////////
+</span><span>    </span><span style=color:#65737e>// Load indices
+</span><span>    {
+</span><span>        </span><span style=color:#b48ead>const </span><span>uint triangle_index = input.</span><span style=color:#bf616a>triangle_index</span><span>;
+</span><span>        </span><span style=color:#b48ead>if </span><span>(triangle_index < meshlet.</span><span style=color:#bf616a>triangle_count</span><span>) {
+</span><span>            g_indices[triangle_index] = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>true</span><span>, uint3>(
+</span><span>                mesh_descriptor.</span><span style=color:#bf616a>mesh_data_buffer_srv</span><span>,
+</span><span>                mesh_descriptor.</span><span style=color:#bf616a>meshlet_triangles_offset
+</span><span>                    + (meshlet.</span><span style=color:#bf616a>triangle_offset </span><span>* sizeof(uint)),
+</span><span>                triangle_index
+</span><span>            );
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#65737e>/////////////////////////////////////////////////////////////////////////////////////
+</span><span>    </span><span style=color:#65737e>// Load and transform vertices
+</span><span>    {
+</span><span>        </span><span style=color:#b48ead>const </span><span>uint vertex_index = input.</span><span style=color:#bf616a>triangle_index</span><span>;
+</span><span>        </span><span style=color:#b48ead>if </span><span>(vertex_index < meshlet.</span><span style=color:#bf616a>vertex_count</span><span>) {
+</span><span>            float3 vertex = mesh_descriptor.</span><span style=color:#bf616a>get_vertex</span><span>(meshlet, vertex_index);
+</span><span>
+</span><span>            vertex = (</span><span style=color:#bf616a>quat_rotate_vector</span><span>(instance_transform.</span><span style=color:#bf616a>quat</span><span>, vertex)
+</span><span>                      * instance_transform.</span><span style=color:#bf616a>scale</span><span>)
+</span><span>                     + instance_transform.</span><span style=color:#bf616a>position</span><span>;
+</span><span>            float4 transformed_vertex = </span><span style=color:#bf616a>mul</span><span>(ubo.</span><span style=color:#bf616a>world_to_clip</span><span>, </span><span style=color:#bf616a>float4</span><span>(vertex, </span><span style=color:#d08770>1.</span><span style=color:#b48ead>f</span><span>));
+</span><span>            transformed_vertex.</span><span style=color:#bf616a>y </span><span>*= -</span><span style=color:#d08770>1.</span><span style=color:#b48ead>f</span><span>;
+</span><span>
+</span><span>            </span><span style=color:#b48ead>const</span><span> float3 subpixel = transformed_vertex.</span><span style=color:#bf616a>xyz </span><span>/ transformed_vertex.</span><span style=color:#bf616a>w</span><span>;
+</span><span>            </span><span style=color:#b48ead>const</span><span> float2 xy = </span><span style=color:#96b5b4>round</span><span>(
+</span><span>                                  ((subpixel.</span><span style=color:#bf616a>xy </span><span>* </span><span style=color:#d08770>0.5</span><span style=color:#b48ead>f</span><span>) + </span><span style=color:#d08770>0.5</span><span style=color:#b48ead>f</span><span>) * (ubo.</span><span style=color:#bf616a>view_size</span><span>)
+</span><span>                                  * </span><span style=color:#b48ead>float</span><span>(SUBPIXEL_SAMPLES)
+</span><span>                              ) / </span><span style=color:#b48ead>float</span><span>(SUBPIXEL_SAMPLES)
+</span><span>                              - </span><span style=color:#d08770>0.5</span><span style=color:#b48ead>f</span><span>;
+</span><span>
+</span><span>            g_vertices[vertex_index] = </span><span style=color:#bf616a>float3</span><span>(xy, subpixel.</span><span style=color:#bf616a>z</span><span>);
+</span><span>        }
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#bf616a>GroupMemoryBarrierWithGroupSync</span><span>();
+</span><span>
+</span><span>    </span><span style=color:#65737e>/////////////////////////////////////////////////////////////////////////////////////
+</span><span>    </span><span style=color:#65737e>// Rasterize
+</span><span>    </span><span style=color:#b48ead>if </span><span>(input.</span><span style=color:#bf616a>triangle_index </span><span>< meshlet.</span><span style=color:#bf616a>triangle_count</span><span>) {
+</span><span>        </span><span style=color:#b48ead>const</span><span> uint3 indices = g_indices[input.</span><span style=color:#bf616a>triangle_index</span><span>];
+</span><span>        </span><span style=color:#bf616a>rasterize</span><span>(
+</span><span>            ubo,
+</span><span>            meshlet_index,
+</span><span>            input.</span><span style=color:#bf616a>triangle_index</span><span>,
+</span><span>            g_vertices[indices[</span><span style=color:#d08770>0</span><span>]],
+</span><span>            g_vertices[indices[</span><span style=color:#d08770>1</span><span>]],
+</span><span>            g_vertices[indices[</span><span style=color:#d08770>2</span><span>]]
+</span><span>        );
+</span><span>    }
+</span><span>}
+</span></code></pre><h2 id=compute-based-vertex-culling>Compute-based vertex culling</h2><p>Another technique I wanted to implement is compute-based vertex culling presented in "Optimizing the Graphics Pipeline with Compute"<sup class=footnote-reference><a href=#4>4</a></sup> This method involves culling meshlets first, and then eliminating invisible triangles. The triangle culling compute shader creates an array of indices derived from the meshlet + index id.<p>The disadvantage of this technique is that without waiting for gpu to get number of visible meshlets, we have to assume the worst case scenario that all triangles are visible, as a number of visible meshlets is computed on the GPU.<h3 id=index-buffer-generation>Index buffer generation</h3><p>The shader assigns every meshlet to a work group comprising of 128 threads, which equals the maximum number of indices in each meshlet. The shader then loads transformed vertex data into the group shared memory and does two culling passes:<ol><li>Backface culling<li>NDC(Normalized Device Coordinates) culling - vertices located outside of a [-1, 1] range are culled.</ol><p>After that, I used wave intrinsics to compact the indices that remain. The process is similar to that used in meshlet and instance culling.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>IndexBufferGeneratorUBO {
+</span><span>    float4x4 world_to_clip;
+</span><span>    uint2 view_size;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>struct </span><span>{
+</span><span>        uint index;
+</span><span>        uint meshlet_offsets_srv;
+</span><span>
+</span><span>        uint mesh_instance_transforms_srv;
+</span><span>        uint mesh_descriptors_srv;
+</span><span>        uint visible_meshlets_srv;
+</span><span>        uint meshlets_offset_srv;
+</span><span>    } in_;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>struct </span><span>{
+</span><span>        uint index_buffer_uav;
+</span><span>        uint visible_indices_count_uav;
+</span><span>    } out_;
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>struct </span><span>Input {
+</span><span>    uint meshlet_index : SV_GroupID;
+</span><span>    uint triangle_index : SV_GroupThreadID;
+</span><span>};
+</span><span>
+</span><span>groupshared uint3 g_indices[</span><span style=color:#d08770>128</span><span>];
+</span><span>
+</span><span>[</span><span style=color:#bf616a>numthreads</span><span>(</span><span style=color:#d08770>128</span><span>, </span><span style=color:#d08770>1</span><span>, </span><span style=color:#d08770>1</span><span>)] 
+</span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>main</span><span>(</span><span style=color:#b48ead>const</span><span> Input </span><span style=color:#bf616a>input</span><span>) {
+</span><span>    </span><span style=color:#b48ead>const</span><span> IndexBufferGeneratorUBO ubo = tundra::</span><span style=color:#bf616a>load_ubo</span><span>&LTIndexBufferGeneratorUBO>();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint meshlets_offset 
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, uint>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>meshlet_offsets_srv</span><span>, 
+</span><span>            </span><span style=color:#d08770>0</span><span>, 
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>index
+</span><span>        );
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint meshlet_index = meshlets_offset + input.</span><span style=color:#bf616a>meshlet_index</span><span>;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const</span><span> VisibleMeshlet visible_meshlet 
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, VisibleMeshlet>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>visible_meshlets_srv</span><span>, 
+</span><span>            </span><span style=color:#d08770>0</span><span>, 
+</span><span>            meshlet_index
+</span><span>        );
+</span><span>    </span><span style=color:#b48ead>const</span><span> InstanceTransform instance_transform
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, InstanceTransform>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>mesh_instance_transforms_srv</span><span>,
+</span><span>            </span><span style=color:#d08770>0</span><span>,
+</span><span>            visible_meshlet.</span><span style=color:#bf616a>instance_transform_index
+</span><span>        );
+</span><span>    </span><span style=color:#b48ead>const</span><span> MeshDescriptor mesh_descriptor 
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, MeshDescriptor>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>mesh_descriptors_srv</span><span>,   
+</span><span>            </span><span style=color:#d08770>0</span><span>, 
+</span><span>            visible_meshlet.</span><span style=color:#bf616a>mesh_descriptor_index
+</span><span>        );
+</span><span>    </span><span style=color:#b48ead>const</span><span> Meshlet meshlet = mesh_descriptor.</span><span style=color:#bf616a>get_meshlet</span><span>(visible_meshlet.</span><span style=color:#bf616a>meshlet_index</span><span>);
+</span><span>
+</span><span>    {
+</span><span>        </span><span style=color:#b48ead>if </span><span>(input.</span><span style=color:#bf616a>triangle_index </span><span>< meshlet.</span><span style=color:#bf616a>triangle_count</span><span>) {
+</span><span>            g_indices[input.</span><span style=color:#bf616a>triangle_index</span><span>] = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>true</span><span>, uint3>(
+</span><span>                mesh_descriptor.</span><span style=color:#bf616a>mesh_data_buffer_srv</span><span>,
+</span><span>                mesh_descriptor.</span><span style=color:#bf616a>meshlet_triangles_offset
+</span><span>                    + (meshlet.</span><span style=color:#bf616a>triangle_offset </span><span>* sizeof(uint)),
+</span><span>                input.</span><span style=color:#bf616a>triangle_index
+</span><span>            );
+</span><span>        }
+</span><span>        </span><span style=color:#bf616a>GroupMemoryBarrierWithGroupSync</span><span>();
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint triangle_index = input.</span><span style=color:#bf616a>triangle_index</span><span>;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>bool</span><span> is_visible = </span><span style=color:#d08770>false</span><span>;
+</span><span>    </span><span style=color:#b48ead>if </span><span>(triangle_index < meshlet.</span><span style=color:#bf616a>triangle_count</span><span>) {
+</span><span>        </span><span style=color:#b48ead>const</span><span> float3 vertices[</span><span style=color:#d08770>3</span><span>] = {
+</span><span>            mesh_descriptor.</span><span style=color:#bf616a>get_vertex</span><span>(meshlet, g_indices[triangle_index][</span><span style=color:#d08770>0</span><span>]),
+</span><span>            mesh_descriptor.</span><span style=color:#bf616a>get_vertex</span><span>(meshlet, g_indices[triangle_index][</span><span style=color:#d08770>1</span><span>]),
+</span><span>            mesh_descriptor.</span><span style=color:#bf616a>get_vertex</span><span>(meshlet, g_indices[triangle_index][</span><span style=color:#d08770>2</span><span>]),
+</span><span>        };
+</span><span>
+</span><span>        float4 transformed_vertices[</span><span style=color:#d08770>3</span><span>];
+</span><span>        [[unroll]] 
+</span><span>        </span><span style=color:#b48ead>for </span><span>(uint i = </span><span style=color:#d08770>0</span><span>; i < </span><span style=color:#d08770>3</span><span>; ++i) {
+</span><span>            </span><span style=color:#b48ead>const</span><span> float3 vec = (</span><span style=color:#bf616a>quat_rotate_vector</span><span>(instance_transform.</span><span style=color:#bf616a>quat</span><span>, vertices[i])
+</span><span>                                * instance_transform.</span><span style=color:#bf616a>scale</span><span>)
+</span><span>                               + instance_transform.</span><span style=color:#bf616a>position</span><span>;
+</span><span>            transformed_vertices[i] = </span><span style=color:#bf616a>mul</span><span>(ubo.</span><span style=color:#bf616a>world_to_clip</span><span>, </span><span style=color:#bf616a>float4</span><span>(vec, </span><span style=color:#d08770>1.</span><span style=color:#b48ead>f</span><span>));
+</span><span>        }
+</span><span>
+</span><span>        </span><span style=color:#65737e>// "Triangle Scan Conversion using 2D Homogeneous Coordinates" 
+</span><span>        </span><span style=color:#65737e>// - Marc Olano, Trey Greer
+</span><span>        </span><span style=color:#b48ead>const float</span><span> det = </span><span style=color:#bf616a>determinant</span><span>(</span><span style=color:#bf616a>float3x3</span><span>(
+</span><span>            transformed_vertices[</span><span style=color:#d08770>0</span><span>].</span><span style=color:#bf616a>xyw</span><span>,
+</span><span>            transformed_vertices[</span><span style=color:#d08770>1</span><span>].</span><span style=color:#bf616a>xyw</span><span>,
+</span><span>            transformed_vertices[</span><span style=color:#d08770>2</span><span>].</span><span style=color:#bf616a>xyw
+</span><span>        ));
+</span><span>
+</span><span>        [[unroll]] 
+</span><span>        </span><span style=color:#b48ead>for </span><span>(uint i = </span><span style=color:#d08770>0</span><span>; i < </span><span style=color:#d08770>3</span><span>; ++i) {
+</span><span>            transformed_vertices[i] 
+</span><span>                = transformed_vertices[i] / transformed_vertices[i].</span><span style=color:#bf616a>w</span><span>;
+</span><span>        }
+</span><span>
+</span><span>        </span><span style=color:#b48ead>const</span><span> float2 min_p = </span><span style=color:#96b5b4>round</span><span>(
+</span><span>            </span><span style=color:#bf616a>min</span><span>(</span><span style=color:#bf616a>min</span><span>(transformed_vertices[</span><span style=color:#d08770>0</span><span>].</span><span style=color:#bf616a>xy</span><span>, transformed_vertices[</span><span style=color:#d08770>1</span><span>].</span><span style=color:#bf616a>xy</span><span>),
+</span><span>                transformed_vertices[</span><span style=color:#d08770>2</span><span>].</span><span style=color:#bf616a>xy</span><span>)
+</span><span>        );
+</span><span>        </span><span style=color:#b48ead>const</span><span> float2 max_p = </span><span style=color:#96b5b4>round</span><span>(
+</span><span>            </span><span style=color:#bf616a>max</span><span>(</span><span style=color:#bf616a>max</span><span>(transformed_vertices[</span><span style=color:#d08770>0</span><span>].</span><span style=color:#bf616a>xy</span><span>, transformed_vertices[</span><span style=color:#d08770>1</span><span>].</span><span style=color:#bf616a>xy</span><span>),
+</span><span>                transformed_vertices[</span><span style=color:#d08770>2</span><span>].</span><span style=color:#bf616a>xy</span><span>)
+</span><span>        );
+</span><span>
+</span><span>        </span><span style=color:#65737e>// vulkan NDC
+</span><span>        </span><span style=color:#65737e>//  (-1, -1)
+</span><span>        </span><span style=color:#65737e>//     |-------------|
+</span><span>        </span><span style=color:#65737e>//     |             |
+</span><span>        </span><span style=color:#65737e>//     |             |
+</span><span>        </span><span style=color:#65737e>//     |             |
+</span><span>        </span><span style=color:#65737e>//     |-------------|
+</span><span>        </span><span style=color:#65737e>//                (1, 1)
+</span><span>        is_visible = (det > </span><span style=color:#d08770>0.</span><span style=color:#b48ead>f</span><span>)                     
+</span><span>                     && !</span><span style=color:#bf616a>any</span><span>(min_p < </span><span style=color:#bf616a>float2</span><span>(-</span><span style=color:#d08770>1</span><span>, -</span><span style=color:#d08770>1</span><span>)) 
+</span><span>                     && !</span><span style=color:#bf616a>any</span><span>(max_p > </span><span style=color:#bf616a>float2</span><span>(</span><span style=color:#d08770>1</span><span>, </span><span style=color:#d08770>1</span><span>));
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint triangle_offset = </span><span style=color:#bf616a>WavePrefixCountBits</span><span>(is_visible);
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint visible_triangles_count = </span><span style=color:#bf616a>WaveActiveCountBits</span><span>(is_visible);
+</span><span>
+</span><span>    uint index_offset = </span><span style=color:#d08770>0</span><span>;
+</span><span>    </span><span style=color:#b48ead>if </span><span>(</span><span style=color:#bf616a>WaveIsFirstLane</span><span>()) {
+</span><span>        tundra::</span><span style=color:#bf616a>buffer_interlocked_add</span><span><</span><span style=color:#d08770>false</span><span>>(
+</span><span>            ubo.</span><span style=color:#bf616a>out_</span><span>.</span><span style=color:#bf616a>visible_indices_count_uav</span><span>, 
+</span><span>            </span><span style=color:#d08770>0</span><span>,
+</span><span>            visible_triangles_count * </span><span style=color:#d08770>3</span><span>,
+</span><span>            index_offset
+</span><span>        );
+</span><span>    }
+</span><span>
+</span><span>    index_offset = </span><span style=color:#bf616a>WaveReadLaneFirst</span><span>(index_offset);
+</span><span>
+</span><span>    </span><span style=color:#b48ead>if </span><span>(is_visible && (triangle_offset < meshlet.</span><span style=color:#bf616a>triangle_count</span><span>)) {
+</span><span>        </span><span style=color:#b48ead>const </span><span>uint shifted_visible_meshlet_index = meshlet_index << VERTEX_ID_BITS;
+</span><span>
+</span><span>        tundra::</span><span style=color:#bf616a>buffer_store</span><span><</span><span style=color:#d08770>false</span><span>>(
+</span><span>            ubo.</span><span style=color:#bf616a>out_</span><span>.</span><span style=color:#bf616a>index_buffer_uav</span><span>,
+</span><span>            index_offset * sizeof(uint),
+</span><span>            triangle_offset,
+</span><span>            shifted_visible_meshlet_index | g_indices[triangle_index]
+</span><span>        );
+</span><span>    }
+</span><span>}
+</span></code></pre><h3 id=generating-draw-indirect-commands>Generating draw indirect commands</h3><p>After generating the index buffer we have to generate dispatch indirect commands. This shader does exactly that. It produces an array of <code>DrawIndexedIndirectCommand</code> and a draw count which we can use in <code>vkCmdDrawIndexedIndirectCount</code>.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>GenerateIndirectCommandsUbo {
+</span><span>    </span><span style=color:#b48ead>struct </span><span>{
+</span><span>        uint visible_indices_count_srv;
+</span><span>    } in_;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>struct </span><span>{
+</span><span>        uint draw_meshlets_draw_args_uav;
+</span><span>        uint draw_count_uav;
+</span><span>    } out_;
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>#define </span><span>NUM_MESHLETS_PER_INDEX_BUFFER </span><span style=color:#d08770>8192
+</span><span style=color:#b48ead>#define </span><span>INDEX_BUFFER_BATCH_SIZE (NUM_MESHLETS_PER_INDEX_BUFFER * </span><span style=color:#d08770>128</span><span style=color:#b48ead>u </span><span>* </span><span style=color:#d08770>3</span><span style=color:#b48ead>u</span><span>)
+</span><span>
+</span><span>[</span><span style=color:#bf616a>numthreads</span><span>(</span><span style=color:#d08770>1</span><span>, </span><span style=color:#d08770>1</span><span>, </span><span style=color:#d08770>1</span><span>)] 
+</span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>main</span><span>(uint thread_id : </span><span style=color:#bf616a>SV_DispatchThreadID</span><span>) {
+</span><span>    </span><span style=color:#b48ead>const</span><span> GenerateIndirectCommandsUbo ubo 
+</span><span>        = tundra::</span><span style=color:#bf616a>load_ubo</span><span>&LTGenerateIndirectCommandsUbo>();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint visible_indices_count 
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>false</span><span>, uint>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>visible_indices_count_srv</span><span>,
+</span><span>            </span><span style=color:#d08770>0</span><span>, 
+</span><span>            </span><span style=color:#d08770>0
+</span><span>        );
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint num_iterations = visible_indices_count / INDEX_BUFFER_BATCH_SIZE;
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint reminder = visible_indices_count % INDEX_BUFFER_BATCH_SIZE;
+</span><span>
+</span><span>    uint start = </span><span style=color:#d08770>0</span><span>;
+</span><span>    uint count = </span><span style=color:#d08770>0</span><span>;
+</span><span>    </span><span style=color:#b48ead>for </span><span>(uint i = </span><span style=color:#d08770>0</span><span>; i < num_iterations; ++i) {
+</span><span>        </span><span style=color:#b48ead>const </span><span>uint end = start + INDEX_BUFFER_BATCH_SIZE;
+</span><span>        tundra::</span><span style=color:#bf616a>buffer_store</span><span><</span><span style=color:#d08770>false</span><span>>(
+</span><span>            ubo.</span><span style=color:#bf616a>out_</span><span>.</span><span style=color:#bf616a>draw_meshlets_draw_args_uav</span><span>,
+</span><span>            </span><span style=color:#d08770>0</span><span>,
+</span><span>            count,
+</span><span>            DrawIndexedIndirectCommand::</span><span style=color:#bf616a>create</span><span>(
+</span><span>                INDEX_BUFFER_BATCH_SIZE, </span><span style=color:#65737e>//
+</span><span>                </span><span style=color:#d08770>1</span><span>,
+</span><span>                start,
+</span><span>                </span><span style=color:#d08770>0</span><span>,
+</span><span>                </span><span style=color:#d08770>0
+</span><span>            )
+</span><span>        );
+</span><span>        start = end;
+</span><span>        count += </span><span style=color:#d08770>1</span><span>;
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#b48ead>if </span><span>(reminder > </span><span style=color:#d08770>0</span><span>) {
+</span><span>        tundra::</span><span style=color:#bf616a>buffer_store</span><span><</span><span style=color:#d08770>false</span><span>>(
+</span><span>            ubo.</span><span style=color:#bf616a>out_</span><span>.</span><span style=color:#bf616a>draw_meshlets_draw_args_uav</span><span>,
+</span><span>            </span><span style=color:#d08770>0</span><span>,
+</span><span>            count,
+</span><span>            DrawIndexedIndirectCommand::</span><span style=color:#bf616a>create</span><span>(
+</span><span>                reminder, 
+</span><span>                </span><span style=color:#d08770>1</span><span>,
+</span><span>                start,
+</span><span>                </span><span style=color:#d08770>0</span><span>,
+</span><span>                </span><span style=color:#d08770>0
+</span><span>            )
+</span><span>        );
+</span><span>        count += </span><span style=color:#d08770>1</span><span>;
+</span><span>    }
+</span><span>
+</span><span>    tundra::</span><span style=color:#bf616a>buffer_store</span><span><</span><span style=color:#d08770>false</span><span>>(ubo.</span><span style=color:#bf616a>out_</span><span>.</span><span style=color:#bf616a>draw_count_uav</span><span>, </span><span style=color:#d08770>0</span><span>, </span><span style=color:#d08770>0</span><span>, count);
+</span><span>}
+</span></code></pre><p>The result of this shader is used in draw indirect:<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span>encoder.</span><span style=color:#bf616a>draw_indexed_indirect_count</span><span>(
+</span><span>    draw_meshlets_draw_args, </span><span style=color:#65737e>// buffer
+</span><span>    </span><span style=color:#d08770>0</span><span>, </span><span style=color:#65737e>// offset
+</span><span>    draw_count, </span><span style=color:#65737e>// count_buffer
+</span><span>    </span><span style=color:#d08770>0</span><span>, </span><span style=color:#65737e>// count_buffer_offset
+</span><span>    </span><span style=color:#d08770>4</span><span>, </span><span style=color:#65737e>// max_draw_count
+</span><span>    sizeof(rhi::DrawIndexedIndirectCommand) </span><span style=color:#65737e>// stride
+</span><span>);
+</span></code></pre><h3 id=rasterization>Rasterization</h3><p>Vertex and fragment shaders are very simple.<p>The vertex shader loads the vertex data of the meshlet and transforms it before outputting the visible meshlet index to the fragment shader.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>VisibilityBufferVertInput {
+</span><span>    uint vertex_id : SV_VertexID;
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>struct </span><span>VisibilityBufferVertOutput {
+</span><span>    float4 position : SV_Position;
+</span><span>    uint visible_meshlet_index : TEXCOORD0;
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>struct </span><span>VisibilityBufferPassUBO {
+</span><span>    float4x4 world_to_view;
+</span><span>    float4x4 view_to_clip;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>struct </span><span>{
+</span><span>        uint visible_meshlets_srv;
+</span><span>        uint mesh_descriptors_srv;
+</span><span>        uint mesh_instance_transforms_srv;
+</span><span>    } in_;
+</span><span>};
+</span><span>
+</span><span>VisibilityBufferVertOutput </span><span style=color:#8fa1b3>main</span><span>(VisibilityBufferVertInput </span><span style=color:#bf616a>input</span><span>) {
+</span><span>    </span><span style=color:#b48ead>const</span><span> VisibilityBufferPassUBO ubo = tundra::</span><span style=color:#bf616a>load_ubo</span><span>&LTVisibilityBufferPassUBO>();
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const</span><span> UnpackedIndex unpacked_index = UnpackedIndex::</span><span style=color:#bf616a>create</span><span>(input.</span><span style=color:#bf616a>vertex_id</span><span>);
+</span><span>    </span><span style=color:#b48ead>const</span><span> VisibleMeshlet visible_meshlet 
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>true</span><span>, VisibleMeshlet>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>visible_meshlets_srv</span><span>, 
+</span><span>            </span><span style=color:#d08770>0</span><span>,
+</span><span>            unpacked_index.</span><span style=color:#bf616a>meshlet_id
+</span><span>        );
+</span><span>    </span><span style=color:#b48ead>const</span><span> InstanceTransform instance_transform
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>true</span><span>, InstanceTransform>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>mesh_instance_transforms_srv</span><span>,
+</span><span>            </span><span style=color:#d08770>0</span><span>,
+</span><span>            visible_meshlet.</span><span style=color:#bf616a>instance_transform_index
+</span><span>        );
+</span><span>    </span><span style=color:#b48ead>const</span><span> MeshDescriptor mesh_descriptor 
+</span><span>        = tundra::</span><span style=color:#bf616a>buffer_load</span><span><</span><span style=color:#d08770>true</span><span>, MeshDescriptor>(
+</span><span>            ubo.</span><span style=color:#bf616a>in_</span><span>.</span><span style=color:#bf616a>mesh_descriptors_srv</span><span>, 
+</span><span>            </span><span style=color:#d08770>0</span><span>,
+</span><span>            visible_meshlet.</span><span style=color:#bf616a>mesh_descriptor_index
+</span><span>        );
+</span><span>    </span><span style=color:#b48ead>const</span><span> Meshlet meshlet = mesh_descriptor.</span><span style=color:#bf616a>get_meshlet</span><span>(visible_meshlet.</span><span style=color:#bf616a>meshlet_index</span><span>);
+</span><span>    </span><span style=color:#b48ead>const</span><span> float3 vertex = mesh_descriptor.</span><span style=color:#bf616a>get_vertex</span><span>(meshlet, unpacked_index.</span><span style=color:#bf616a>vertex_id</span><span>);
+</span><span>    </span><span style=color:#b48ead>const</span><span> float3 world_space_vertex 
+</span><span>        = (</span><span style=color:#bf616a>quat_rotate_vector</span><span>(instance_transform.</span><span style=color:#bf616a>quat</span><span>, vertex) * instance_transform.</span><span style=color:#bf616a>scale</span><span>)
+</span><span>          + instance_transform.</span><span style=color:#bf616a>position</span><span>;
+</span><span>
+</span><span>    VisibilityBufferVertOutput output;
+</span><span>    float4 pos = </span><span style=color:#bf616a>float4</span><span>(world_space_vertex, </span><span style=color:#d08770>1.</span><span style=color:#b48ead>f</span><span>);
+</span><span>    pos = </span><span style=color:#bf616a>mul</span><span>(ubo.</span><span style=color:#bf616a>world_to_view</span><span>, pos);
+</span><span>    pos = </span><span style=color:#bf616a>mul</span><span>(ubo.</span><span style=color:#bf616a>view_to_clip</span><span>, pos);
+</span><span>
+</span><span>    output.</span><span style=color:#bf616a>position </span><span>= pos;
+</span><span>    output.</span><span style=color:#bf616a>visible_meshlet_index </span><span>= unpacked_index.</span><span style=color:#bf616a>meshlet_id</span><span>;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>return</span><span> output;
+</span><span>}
+</span></code></pre><p>Fragment shader hashes the <code>SV_PrimitiveID</code>, so we can see individual triangles.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>VisibilityBufferFragInput {
+</span><span>    uint visible_meshlet_index : TEXCOORD0;
+</span><span>    uint triangle_index : SV_PrimitiveID;
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>struct </span><span>VisibilityBufferFragOutput {
+</span><span>    float4 color : SV_Target;
+</span><span>};
+</span><span>
+</span><span>VisibilityBufferFragOutput </span><span style=color:#8fa1b3>main</span><span>(VisibilityBufferFragInput </span><span style=color:#bf616a>input</span><span>) {
+</span><span>    VisibilityBufferFragOutput output;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint hash = </span><span style=color:#bf616a>hash_uint</span><span>(input.</span><span style=color:#bf616a>triangle_index</span><span>);
+</span><span>    </span><span style=color:#b48ead>const</span><span> float3 color = </span><span style=color:#bf616a>float3</span><span>(
+</span><span>                             </span><span style=color:#b48ead>float</span><span>(hash & </span><span style=color:#d08770>0xff</span><span>),
+</span><span>                             </span><span style=color:#b48ead>float</span><span>((hash >> </span><span style=color:#d08770>8</span><span>) & </span><span style=color:#d08770>0xff</span><span>),
+</span><span>                             </span><span style=color:#b48ead>float</span><span>((hash >> </span><span style=color:#d08770>16</span><span>) & </span><span style=color:#d08770>0xff</span><span>)
+</span><span>                         )
+</span><span>                         / </span><span style=color:#d08770>255.0</span><span style=color:#b48ead>f</span><span>;
+</span><span>
+</span><span>    output.</span><span style=color:#bf616a>color </span><span>= </span><span style=color:#bf616a>float4</span><span>(color, </span><span style=color:#d08770>1.</span><span style=color:#b48ead>f</span><span>);
+</span><span>    </span><span style=color:#b48ead>return</span><span> output;
+</span><span>}
+</span></code></pre><p>Here is an example of what a single draw call looks like: <img alt src=/img/tundra_behind_the_scenes/compute-vertex-culling-render-doc-view.png><p>A screenshot from the Radeon GPU Profiler. The pipeline is not optimized, as it was only an experiment. <img alt src=/img/tundra_behind_the_scenes/compute-vertex-culling-rgp-view.png><h2 id=mesh-shaders>Mesh shaders</h2><p>While working on the compute rasterizer, I have noticed that the <code>vkCmdDrawMeshTasksIndirect</code> has a similar restriction as the compute dispatch, <a href="https://vulkan.gpuinfo.org/displayextensionproperty.php?platform=windows&extensionname=VK_EXT_mesh_shader&extensionproperty=maxTaskWorkGroupCount">where the minimum required group count is equal to <code>65535</code></a>. The technique used in the software rasterizer can certainly be used with mesh shaders to render an entire scene in a single draw call. However, the <a href="https://vulkan.gpuinfo.org/displayextensionproperty.php?extensionname=VK_EXT_mesh_shader&extensionproperty=maxMeshWorkGroupTotalCount&platform=windows"><code>maxMeshWorkGroupTotalCount</code></a> is limited to <code>4194304</code>. Therefore, we cannot surpass <code>y = 64</code> if we don't want to exceed this limit.<p>However, even with this restriction, we can produce roughly 4.2 million commands. Each command is assigned to a workgroup, which allows us to process 64 meshlets per workgroup. This equates to around 268 million meshlets and 34 billion triangles, which should be more than sufficient.<p>Pseudo HLSL. This code should work regardless of the hardware wavefront size. <a href=https://microsoft.github.io/DirectX-Specs/d3d/MeshShader.html#dispatchmesh-intrinsic>The <code>DispatchMesh</code> call implies a <code>GroupMemoryBarrierWithGroupSync()</code></a>. The same situation happens in Vulkan with <a href=https://github.com/KhronosGroup/Vulkan-Docs/blob/main/proposals/VK_EXT_mesh_shader.adoc#33-spir-v-changes><code>EmitMeshTasksEXT</code></a>.<pre class=language-cpp data-lang=cpp style=background:#2b303b;color:#c0c5ce><code class=language-cpp data-lang=cpp><span style=color:#b48ead>struct </span><span>Payload {
+</span><span>    uint instance_id;
+</span><span>    uint meshlet_indices[</span><span style=color:#d08770>64</span><span>];
+</span><span>};
+</span><span>
+</span><span style=color:#b48ead>struct </span><span>MeshTaskCommand {
+</span><span>    uint instance_id;
+</span><span>    uint meshlet_offset;
+</span><span>    uint num_meshlets;
+</span><span>};
+</span><span>
+</span><span>groupshared Payload g_payload;
+</span><span>
+</span><span>[</span><span style=color:#bf616a>numthreads</span><span>(</span><span style=color:#d08770>64</span><span>, </span><span style=color:#d08770>1</span><span>, </span><span style=color:#d08770>1</span><span>)]
+</span><span style=color:#b48ead>void </span><span style=color:#8fa1b3>main</span><span>(
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint group_thread_id: </span><span style=color:#bf616a>SV_GroupThreadID</span><span>,
+</span><span>    </span><span style=color:#b48ead>const</span><span> uint3 group_id: SV_GroupID
+</span><span>) {
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint task_command_index = group_id.</span><span style=color:#bf616a>x </span><span>* </span><span style=color:#d08770>64 </span><span>+ group_id.</span><span style=color:#bf616a>y</span><span>;
+</span><span>    </span><span style=color:#b48ead>const</span><span> MeshTaskCommand command = task_commands[task_command_index];
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint meshlet_index = command.</span><span style=color:#bf616a>meshlet_offset </span><span>+ group_thread_id;
+</span><span>
+</span><span>    </span><span style=color:#65737e>// #TODO: Load mesh data
+</span><span>
+</span><span>    </span><span style=color:#b48ead>bool</span><span> is_visible = group_thread_id < command.</span><span style=color:#bf616a>num_meshlets</span><span>;
+</span><span>    </span><span style=color:#b48ead>if </span><span>(is_visible) {
+</span><span>        </span><span style=color:#65737e>// #TODO: Do a meshlet culling
+</span><span>    }
+</span><span>
+</span><span>    </span><span style=color:#b48ead>if </span><span>(is_visible) {
+</span><span>        </span><span style=color:#b48ead>const </span><span>uint index = </span><span style=color:#bf616a>WavePrefixCountBits</span><span>(is_visible);
+</span><span>        g_payload.</span><span style=color:#bf616a>meshlet_indices</span><span>[index] = meshlet_index;
+</span><span>    }
+</span><span>    g_payload.</span><span style=color:#bf616a>instance_id </span><span>= command.</span><span style=color:#bf616a>instance_id</span><span>;
+</span><span>
+</span><span>    </span><span style=color:#b48ead>const </span><span>uint visible_meshlet_count = </span><span style=color:#bf616a>WaveActiveCountBits</span><span>(is_visible);
+</span><span>    </span><span style=color:#bf616a>DispatchMesh</span><span>(visible_meshlet_count, </span><span style=color:#d08770>1</span><span>, </span><span style=color:#d08770>1</span><span>, g_payload);
+</span><span>}
+</span></code></pre><h1 id=summary>Summary</h1><p>Exploring advanced GPU-driven techniques in real-time graphics has been an enjoyable and valuable journey. This journey has not only expanded my technical knowledge but has also provided valuable insights into the possibilities and challenges of modern GPU programming.<p>Visibility buffer approach is quite interesting and is becoming increasingly popular. It was shipped, for example, in UE5 with Nanite<sup class=footnote-reference><a href=#5>5</a></sup> and in Horizon Forbidden West<sup class=footnote-reference><a href=#6>6</a></sup>. It's definitely something that I want to explore more, together with mesh shaders.<h1 id=screenshots>Screenshots</h1><p><img alt src=/img/tundra_behind_the_scenes/car-pbr-gold-2.png><p><img title="Mesh normals" alt src=/img/tundra_behind_the_scenes/car-normals.png><p><img title="Meshlet view" alt=Screenshot src=/img/tundra_behind_the_scenes/software-meshlet-view.png><p><img title="Triangles view" alt src=/img/tundra_behind_the_scenes/tundra-car.png><p><img title="1000 cars, each made out of 1620 meshlets and 105'514 triangles" alt src=/img/tundra_behind_the_scenes/1000-cars.png><p><img title="Test level" alt src=/img/tundra_behind_the_scenes/level.png><p><img title="Triangles view" alt src=/img/tundra_behind_the_scenes/software-meshlet-triangles-view.png><p><img title="Triangles view close-up" alt src=/img/tundra_behind_the_scenes/software-meshlet-triangles-view-close-up.png><p><img title="Linearized depth buffer view" alt src=/img/tundra_behind_the_scenes/software-meshlet-depth-buffer-view.png><h1 id=resources>Resources</h1><div class=footnote-definition id=1><sup class=footnote-definition-label>1</sup><p><a href=https://community.arm.com/arm-community-blogs/b/graphics-gaming-and-vr-blog/posts/vulkan-mobile-best-practices-and-management>Vulkan Mobile Best Practices - Management of Command Buffers and Multi-Threaded Recording - Arm</a></div><div class=footnote-definition id=2><sup class=footnote-definition-label>2</sup><p><a href=https://developer.nvidia.com/blog/introduction-turing-mesh-shaders/>Introduction to Turing Mesh Shaders - Nvidia</a></div><div class=footnote-definition id=3><sup class=footnote-definition-label>3</sup><p><a href="https://vulkan.gpuinfo.org/displaydevicelimit.php?name=maxComputeWorkGroupCount%5B0%5D&platform=all">Vulkan gpuinfo device limits</a></div><div class=footnote-definition id=4><sup class=footnote-definition-label>4</sup><p>Optimizing the Graphics Pipeline with Compute - Frostbite Engine/Electronic Arts</div><div class=footnote-definition id=5><sup class=footnote-definition-label>5</sup><p>A Deep Dive into Nanite Virtualized Geometry - Epic Games</div><div class=footnote-definition id=6><sup class=footnote-definition-label>6</sup><p>Adventures with Deferred Texturing in Horizon Forbidden West - Guerrilla Games</div><p>Extras:<ul><li>GPU-Driven Rendering Pipelines - Ubisoft<li>The Visibility Buffer: A Cache-Friendly Approach to Deferred Shading - Intel Labs</ul></section></article></main></div>
